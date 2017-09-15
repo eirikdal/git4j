@@ -1,9 +1,11 @@
 package no.edh.impl;
 
+import no.edh.Git;
 import no.edh.Repository;
 import no.edh.hashing.SHA1;
 import no.edh.objects.GitBlob;
 import no.edh.objects.GitObject;
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,11 +23,17 @@ class GitImplTest {
 
     private static final String userDir = System.getProperty("user.dir");
 
+    static {
+        try {
+            GitImpl git = new GitImpl();
+            git.init("testrepo");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
     void skal_kunne_lage_nytt_repo() throws IOException {
-        GitImpl git = new GitImpl();
-        git.init("testrepo");
-
         assertTrue(Paths.get(System.getProperty("user.dir"), "testrepo", ".git").toFile().exists());
     }
 

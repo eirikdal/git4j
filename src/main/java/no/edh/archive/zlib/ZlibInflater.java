@@ -18,6 +18,5 @@ public class ZlibInflater {
         out = new DeflaterOutputStream(out);
         IOUtils.copy(in, out);
         in.close();
-        out.close();
     }
 }

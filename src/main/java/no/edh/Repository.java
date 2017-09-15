@@ -42,7 +42,7 @@ public class Repository {
     }
 
     public void create(Path repository) throws IOException {
-        if (!repository.toFile().exists()) {
+        if (!repository.resolve(".git").toFile().exists()) {
             logger.info("Initializing Git repository..");
             gitInternal = Paths.get(repository.toString(), ".git");
             gitInternal.toFile().mkdirs();
