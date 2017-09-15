@@ -33,6 +33,7 @@ class GitImplTest {
     void skal_kunne_legge_til_nye_filer() throws IOException {
         Paths.get(userDir, "testrepo", ".git", "index").toFile().delete();
         Paths.get(userDir, "testrepo", "testfile").toFile().delete();
+        Paths.get(userDir, "testrepo").toFile().mkdirs();
         Path file = Files.write(Paths.get(userDir, "testrepo", "testfile"), "test".getBytes());
 
         GitImpl git = new GitImpl("testrepo");
@@ -43,7 +44,7 @@ class GitImplTest {
         SHA1 sha1 = new SHA1(blob);
         GitObject gitObject = repository.getObjects().find(sha1);
 
-        assertTrue(((GitBlob) gitObject).getLocation().toFile().exists());
+        assertTrue(Paths.get(userDir, "testrepo", ".git", "index").toFile().exists());
     }
 
 }
