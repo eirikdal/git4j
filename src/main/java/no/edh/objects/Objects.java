@@ -32,11 +32,11 @@ public class Objects {
         return new GitBlob(object);
     }
 
-    public Path addFileToObjects(Path file) throws IOException {
-        String hash = new SHA1(new GitBlob(file)).hash();
+    public Path addObject(GitObject file) throws IOException {
+        String hash = new SHA1(new GitBlob(file.getPath())).hash();
         Path object = objects.resolve(hash.substring(0,2)).resolve(hash.substring(2, hash.length()));
         object.getParent().toFile().mkdir();
-        new ZlibInflater().compress(new FileInputStream(file.toFile()), new FileOutputStream(object.toFile()));
+        new ZlibInflater().compress(new FileInputStream(file.getPath().toFile()), new FileOutputStream(object.toFile()));
         return object;
     }
 }

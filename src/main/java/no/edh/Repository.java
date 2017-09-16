@@ -1,12 +1,12 @@
 package no.edh;
 
+import no.edh.index.Index;
 import no.edh.objects.Head;
 import no.edh.objects.Objects;
 import no.edh.refs.Refs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;

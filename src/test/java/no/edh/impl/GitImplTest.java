@@ -34,7 +34,7 @@ class GitImplTest {
 
     @Test
     void skal_kunne_lage_nytt_repo() throws IOException {
-        assertTrue(Paths.get(System.getProperty("user.dir"), "testrepo", ".git").toFile().exists());
+        assertTrue(Paths.get(userDir, "testrepo", ".git").toFile().exists());
     }
 
     @Test

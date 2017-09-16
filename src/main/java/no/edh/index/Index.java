@@ -1,19 +1,15 @@
-package no.edh;
+package no.edh.index;
 
-import no.edh.hashing.SHA1;
+import no.edh.index.header.IndexHeader;
+import no.edh.objects.GitObject;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.PosixFileAttributes;
-import java.time.LocalDateTime;
 
 public class Index {
     private Path index;
@@ -27,12 +23,12 @@ public class Index {
     }
 
     public void init() throws IOException {
-        this.index.toFile().createNewFile();
-        createHeader();
+        boolean newFile = this.index.toFile().createNewFile();
+        new IndexHeader(this.index).createHeader();
     }
 
-    public void addFileToIndex(Path file) throws IOException {
-        BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
+    public void addObjectToIndex(GitObject file) throws IOException {
+        BasicFileAttributes attr = Files.readAttributes(file.getPath(), BasicFileAttributes.class);
 
         FileOutputStream fos = new FileOutputStream(index.toFile(), true);
         DataOutputStream outputStream = new DataOutputStream(fos);
@@ -48,10 +44,10 @@ public class Index {
         outputStream.write(groupId());
 //        outputStream.write(fileContentLength(file));
         outputStream.write(new byte[] {0,0,0,4}); // 40 file length?
-        outputStream.write(DigestUtils.sha1(Files.readAllBytes(file))); // 44
+        outputStream.write(DigestUtils.sha1(Files.readAllBytes(file.getPath()))); // 44
         outputStream.write(flags()); // 48
 //        outputStream.write(flags2());
-        outputStream.write(path(file)); // variable length
+        outputStream.write(path(file.getPath())); // variable length
 //        outputStream.write(new byte[] {0}); // zero-pad length up to mod 8
         outputStream.write(new byte[] {0});
         outputStream.write(DigestUtils.sha1(Files.readAllBytes(index)));
@@ -83,7 +79,6 @@ public class Index {
 
     private byte[] flags() {
         return new byte[] { 0,8 };
-//        return new byte[] { (byte) 0b100010101, (byte) 0b11110100};
     }
 
     private byte[] fileContentLength(Path file) {
@@ -124,17 +119,5 @@ public class Index {
 
     private byte[] createdTimeSeconds(BasicFileAttributes attr) {
         return longToBytes(attr.creationTime().toInstant().getEpochSecond());
-    }
-
-    private void createHeader() throws IOException {
-        FileOutputStream fos = new FileOutputStream(index.toFile());
-        DataOutputStream outputStream = new DataOutputStream(fos);
-
-        outputStream.write(new byte[] { 'D', 'I', 'R', 'C'});
-        outputStream.write(new byte[] { 0, 0, 0, 2 });
-        outputStream.write(new byte[] { 0, 0, 0, 1 });
-
-        outputStream.close();
-        fos.close();
     }
 }

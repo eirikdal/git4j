@@ -1,4 +1,4 @@
-package no.edh.index;
+package no.edh.index.entry;
 
 public class IndexEntry {
 }
