@@ -50,8 +50,8 @@ public class GitImpl implements Git {
         }
 
         GitBlob blob = new GitBlob(file);
-        repository.getIndex().addObjectToIndex(blob);
         repository.getObjects().addObject(blob);
+        repository.getIndex().addObjectToIndex(blob);
     }
 
     public static void main(String[] args) {

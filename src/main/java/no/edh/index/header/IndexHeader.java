@@ -1,10 +1,10 @@
 package no.edh.index.header;
 
+import no.edh.index.io.IndexIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -14,25 +14,11 @@ public class IndexHeader {
 
     private static final Logger logger = LoggerFactory.getLogger(IndexHeader.class);
 
-    private static final int OFFSET = 0;
-    private static final int LENGTH = 12;
     private Path index;
+    private long length;
 
     public IndexHeader(Path index) {
         this.index = index;
-    }
-
-    /**
-     * Open file and apply writeoperations to it
-     *
-     * @param ops
-     */
-    private void openStream(Stream<WriteOperation> ops) {
-        try (RandomAccessFile fos = new RandomAccessFile(index.toFile(), "rwd")) {
-            ops.forEach(writeOperation -> writeOperation.write(fos));
-        } catch (IOException e) {
-            logger.warn("Could not write to index file", e);
-        }
     }
 
     /**
@@ -40,11 +26,27 @@ public class IndexHeader {
      *
      * @throws IOException
      */
-    public void createHeader() throws IOException {
-        openStream(Stream.of(
+    public void init() throws IOException {
+        this.length = new IndexIO(this.index).apply(0, Stream.of(
                 new HeaderWriteOperation(),
                 new VersionWriteOperation(),
-                new CounterWriteOperation(count -> 0) // initialize with 0
+                new FileCounterWriteOperation(count -> 0L) // initialize with 0
         ));
+    }
+
+    public void write(long count) {
+        this.length = new IndexIO(this.index).apply(0, Stream.of(
+                new HeaderWriteOperation(),
+                new VersionWriteOperation(),
+                new FileCounterWriteOperation(current -> count+current) // initialize with 0
+        ));
+    }
+
+    public long getLength() {
+        return length;
+    }
+
+    public void setLength(Integer length) {
+        this.length = length;
     }
 }
