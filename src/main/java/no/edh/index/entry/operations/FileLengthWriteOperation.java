@@ -25,8 +25,7 @@ public class FileLengthWriteOperation implements WriteOperation {
         long offset, initial;
         try {
             initial = file.getFilePointer();
-//            file.write(longToBytes(entry.toFile().length()));
-            file.write(new byte[] {0,0,0,4});
+            file.write(longToBytes(entry.toFile().length()));
             offset = file.getFilePointer();
             return offset - initial;
         } catch (IOException e) {

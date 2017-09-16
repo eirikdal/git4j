@@ -1,6 +1,5 @@
 package no.edh.index.entry.operations;
 
-import no.edh.index.entry.TimeType;
 import no.edh.index.entry.operations.exceptions.WriteOperationException;
 import no.edh.index.io.WriteOperation;
 import org.slf4j.Logger;

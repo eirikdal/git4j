@@ -1,9 +1,6 @@
 package no.edh.index.entry;
 
-import no.edh.index.entry.operations.FileAttrWriteOperation;
-import no.edh.index.entry.operations.FileLengthWriteOperation;
-import no.edh.index.entry.operations.FilePathWriteOperation;
-import no.edh.index.entry.operations.FileTimeWriteOperation;
+import no.edh.index.entry.operations.*;
 import no.edh.index.file.FileAttr;
 import no.edh.index.io.IndexIO;
 import no.edh.objects.GitBlob;
@@ -15,8 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.stream.Stream;
-
-import static no.edh.index.entry.operations.FileAttrWriteOperation.*;
 
 public class IndexEntry {
 

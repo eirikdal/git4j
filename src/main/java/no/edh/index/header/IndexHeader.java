@@ -1,5 +1,8 @@
 package no.edh.index.header;
 
+import no.edh.index.header.operations.FileCounterWriteOperation;
+import no.edh.index.header.operations.HeaderWriteOperation;
+import no.edh.index.header.operations.VersionWriteOperation;
 import no.edh.index.io.IndexIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
-
-import static no.edh.index.header.IndexHeaderWriteOperations.*;
 
 public class IndexHeader {
 

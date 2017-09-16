@@ -1,4 +1,4 @@
-package no.edh.index.entry;
+package no.edh.index.entry.operations;
 
 public enum TimeType {
     MILLISECONDS,
