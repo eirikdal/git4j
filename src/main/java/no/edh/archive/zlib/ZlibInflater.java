@@ -3,19 +3,21 @@ package no.edh.archive.zlib;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.util.zip.DataFormatException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
 public class ZlibInflater {
 
     /**
-     * Compresses a file with zlib compression.
+     * Decompresses a zlib compressed file.
      */
-    public void compress(InputStream in, OutputStream out)
+    public void decompressFile(Path compressed, OutputStream out)
             throws IOException
     {
-        out = new DeflaterOutputStream(out);
+        InputStream in =
+                new InflaterInputStream(Files.newInputStream(compressed));
         IOUtils.copy(in, out);
         in.close();
     }

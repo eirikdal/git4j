@@ -1,5 +1,6 @@
 package no.edh.archive;
 
+import no.edh.archive.zlib.ZlibDeflater;
 import no.edh.archive.zlib.ZlibInflater;
 
 import java.io.*;
@@ -15,8 +16,8 @@ public class Archive {
         archive.toFile().deleteOnExit();
     }
 
-    public Archive(InputStream contentStream) throws IOException {
-        new ZlibInflater().compress(contentStream, Files.newOutputStream(this.getArchive()));
+    public Archive(File file) throws IOException {
+        new ZlibDeflater().compress(file, this.getArchive().toFile());
     }
 
     public Path getArchive() {

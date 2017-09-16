@@ -1,12 +1,10 @@
 package no.edh.objects;
 
-import no.edh.archive.zlib.ZlibInflater;
+import no.edh.archive.zlib.ZlibDeflater;
 import no.edh.hashing.SHA1;
+import org.apache.commons.codec.digest.DigestUtils;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -32,11 +30,23 @@ public class Objects {
         return new GitBlob(object);
     }
 
-    public Path addObject(GitObject file) throws IOException {
-        String hash = new SHA1(new GitBlob(file.getPath())).hash();
-        Path object = objects.resolve(hash.substring(0,2)).resolve(hash.substring(2, hash.length()));
-        object.getParent().toFile().mkdir();
-        new ZlibInflater().compress(new FileInputStream(file.getPath().toFile()), new FileOutputStream(object.toFile()));
-        return object;
+    public GitBlob addObject(GitBlob blob) throws IOException {
+        File objectsTmpFile = blob.getObjectsStream(blob);
+
+        Path object = getLocationOfObject(objectsTmpFile);
+
+        new ZlibDeflater().compress(objectsTmpFile, object.toFile());
+
+        blob.setObjectPath(object);
+        return blob;
+    }
+
+    private Path getLocationOfObject(File blob) throws IOException {
+        try (FileInputStream in = new FileInputStream(blob)) {
+            String hash = DigestUtils.sha1Hex(in);
+            Path object = objects.resolve(hash.substring(0,2)).resolve(hash.substring(2, hash.length()));
+            object.getParent().toFile().mkdir();
+            return object;
+        }
     }
 }

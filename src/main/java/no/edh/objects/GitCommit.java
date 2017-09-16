@@ -13,7 +13,7 @@ public class GitCommit implements GitObject{
     }
 
     @Override
-    public Path getPath() {
+    public Path getObjectPath() {
         return null;
     }
 

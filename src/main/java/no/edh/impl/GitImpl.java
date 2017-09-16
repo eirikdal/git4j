@@ -5,6 +5,7 @@ import no.edh.Repository;
 import no.edh.hashing.SHA1;
 import no.edh.objects.GitBlob;
 import no.edh.objects.GitCommit;
+import no.edh.objects.GitObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +28,11 @@ public class GitImpl implements Git {
     public SHA1 commit(String message) {
         GitCommit commit = new GitCommit(message);
 
-        try {
-            repository.getObjects().addObject(commit);
-        } catch (IOException e) {
-            logger.error("Error writing commit", e);
-        }
+//        try {
+//            repository.getObjects().addObject(commit);
+//        } catch (IOException e) {
+//            logger.error("Error writing commit", e);
+//        }
         return new SHA1(commit);
     }
 
@@ -50,8 +51,8 @@ public class GitImpl implements Git {
         }
 
         GitBlob blob = new GitBlob(file);
-        repository.getObjects().addObject(blob);
-        repository.getIndex().addObjectToIndex(blob);
+        GitBlob object = repository.getObjects().addObject(blob);
+        repository.getIndex().addObjectToIndex(object);
     }
 
     public static void main(String[] args) {

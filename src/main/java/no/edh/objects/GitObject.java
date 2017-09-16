@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.file.Path;
 
 public interface GitObject {
-    Path getPath();
+    Path getObjectPath();
     InputStream getHashStream() throws IOException;
     InputStream getContentStream();
 }
