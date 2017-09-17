@@ -29,8 +29,9 @@ public class FilePathWriteOperation implements WriteOperation {
 
             URI relativize = testrepo.relativize(fileUri);
 
-            file.write(relativize.getPath().getBytes());
-            return relativize.getPath().getBytes().length;
+            byte[] bytes = relativize.getPath().getBytes();
+            file.write(bytes);
+            return bytes.length;
         } catch (IOException e) {
             logger.error("Error writing file path entry", e);
             throw new WriteOperationException("Error writing to index file", e);

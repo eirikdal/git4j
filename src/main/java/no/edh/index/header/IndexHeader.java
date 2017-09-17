@@ -39,7 +39,7 @@ public class IndexHeader {
         this.length = new IndexIO(this.index).apply(0, Stream.of(
                 new HeaderWriteOperation(),
                 new VersionWriteOperation(),
-                new FileCounterWriteOperation(current -> count+current) // initialize with 0
+                new FileCounterWriteOperation(current -> count) // initialize with 0
         ));
     }
 

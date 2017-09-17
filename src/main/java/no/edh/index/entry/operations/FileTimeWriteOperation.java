@@ -1,6 +1,7 @@
 package no.edh.index.entry.operations;
 
 import no.edh.index.entry.operations.exceptions.WriteOperationException;
+import no.edh.index.entry.operations.misc.TimeType;
 import no.edh.index.io.WriteOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.attribute.FileTime;
 
-import static no.edh.index.entry.operations.OperationUtils.longToBytes;
+import static no.edh.index.entry.operations.misc.BitWiseOperations.longToBytes;
 
 public class FileTimeWriteOperation implements WriteOperation {
 
@@ -25,23 +26,23 @@ public class FileTimeWriteOperation implements WriteOperation {
 
     @Override
     public long write(RandomAccessFile file) {
-        long offset, initial;
         try {
-            initial = file.getFilePointer();
-
+            byte[] bytes = new byte[0];
             switch (timeType) {
                 case SECONDS:
-                    file.write(longToBytes(time.toMillis() / 1000L));
+                    bytes = longToBytes(time.toMillis() / 1000L);
+                    file.write(bytes);
                     break;
                 case MILLISECONDS:
-                    file.write(longToBytes(time.toInstant().getEpochSecond()));
+                    bytes = longToBytes(time.toInstant().getEpochSecond());
+                    file.write(bytes);
                     break;
                 case NANOSECONDS:
-                    file.write(longToBytes(time.toMillis() * 1000L));
+                    bytes = longToBytes(time.toMillis() * 1000L);
+                    file.write(bytes);
                     break;
             }
-            offset = file.getFilePointer();
-            return offset - initial;
+            return bytes.length;
         } catch (IOException e) {
             logger.error("Error writing file time", e);
             throw new WriteOperationException("Error writing to index file", e);

@@ -47,19 +47,19 @@ public class Index {
     public void addObjectToIndex(GitBlob file) throws IOException {
         IndexEntry entry = writeIndexEntry(file);
         updateLength(entry);
-        updateIndex();
     }
 
     private IndexEntry writeIndexEntry(GitBlob blob) throws IOException {
-        IndexEntry entry = new IndexEntry(index, blob, header.getLength());
+        Long lengthOfEntries = entries.stream().mapToLong(value -> value.getLength()).sum();
+        IndexEntry entry = new IndexEntry(index, blob, header.getLength() + lengthOfEntries);
         entry.write();
         entries.add(entry);
         return entry;
     }
 
-    private void updateLength(IndexEntry entry) {
+    public void updateLength(IndexEntry entry) {
         LongStream stream = entries.stream().mapToLong(value -> entry.getLength());
-        this.totalLength += stream.sum();
+        this.totalLength = this.header.getLength() + stream.sum();
     }
 
     /**
@@ -67,7 +67,7 @@ public class Index {
      *
      * @throws IOException
      */
-    private void updateIndex() throws IOException {
+    public void updateIndex() throws IOException {
         this.header.write(this.entries.size());
         FileAttr attr = new FileAttr(DigestUtils.sha1(Files.readAllBytes(this.index))); // sha1 of index
 

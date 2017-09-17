@@ -1,7 +1,6 @@
 package no.edh.index.header.operations;
 
 import no.edh.index.entry.operations.exceptions.WriteOperationException;
-import no.edh.index.header.IndexHeader;
 import no.edh.index.io.WriteOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +9,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.function.LongFunction;
 
-import static no.edh.index.entry.operations.OperationUtils.longToBytes;
+import static no.edh.index.entry.operations.misc.BitWiseOperations.longToBytes;
 
 public class FileCounterWriteOperation implements WriteOperation {
     private static final Logger logger = LoggerFactory.getLogger(FileCounterWriteOperation.class);

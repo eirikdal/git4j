@@ -43,9 +43,11 @@ class GitImplTest {
         Paths.get(userDir, "testrepo", "testfile").toFile().delete();
         Paths.get(userDir, "testrepo").toFile().mkdirs();
         Path file = Files.write(Paths.get(userDir, "testrepo", "testfile"), "test".getBytes());
+        Path file2 = Files.write(Paths.get(userDir, "testrepo", "testfile2"), "testtest".getBytes());
 
         GitImpl git = new GitImpl("testrepo");
         git.add(file);
+        git.add(file2);
 
         Repository repository = new Repository();
         GitBlob blob = new GitBlob(file);
