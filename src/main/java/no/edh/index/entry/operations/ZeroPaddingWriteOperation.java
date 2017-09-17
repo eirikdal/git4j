@@ -18,9 +18,8 @@ public class ZeroPaddingWriteOperation implements WriteOperation {
     @Override
     public long write(RandomAccessFile file) {
         try {
-//            file.write(new byte[] {0});
-            int padLen = getPadLen(file);
             file.write(new byte[] {0});
+            int padLen = getPadLen(file);
             if (padLen > 0) {
                 byte[] zeroPadding = new byte[padLen];
                 file.write(zeroPadding);

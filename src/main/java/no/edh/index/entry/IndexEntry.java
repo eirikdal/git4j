@@ -46,7 +46,7 @@ public class IndexEntry {
                 new FileFlagsWriteOperation(entry.getWorkingFilePath()), //flags 62
 //                new FileAttrWriteOperation(new FileAttr(new byte[] {0,0})), //flags 62
                 new FilePathWriteOperation(entry.getWorkingFilePath()), //path 70
-                new ZeroPaddingWriteOperation(entry.getWorkingFilePath()) //zero-padding 78
+                new ZeroPaddingWriteOperation(entry.getWorkingFilePath()) //zero-padding 71
         ));
         data.close();
     }

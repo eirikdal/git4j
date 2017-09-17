@@ -49,6 +49,7 @@ class GitImplTest {
         git.add(file);
         git.add(file2);
 
+
         Repository repository = new Repository();
         GitBlob blob = new GitBlob(file);
         SHA1 sha1 = new SHA1(blob);

@@ -45,21 +45,24 @@ public class Index {
      * @throws IOException
      */
     public void addObjectToIndex(GitBlob file) throws IOException {
-        IndexEntry entry = writeIndexEntry(file);
-        updateLength(entry);
+        writeIndexEntry(file);
+        updateLength();
     }
 
-    private IndexEntry writeIndexEntry(GitBlob blob) throws IOException {
+    private void writeIndexEntry(GitBlob blob) throws IOException {
         Long lengthOfEntries = entries.stream().mapToLong(value -> value.getLength()).sum();
-        IndexEntry entry = new IndexEntry(index, blob, header.getLength() + lengthOfEntries);
+        long offset = header.getLength() + lengthOfEntries;
+        IndexEntry entry = new IndexEntry(index, blob, offset);
         entry.write();
         entries.add(entry);
-        return entry;
     }
 
-    public void updateLength(IndexEntry entry) {
-        LongStream stream = entries.stream().mapToLong(value -> entry.getLength());
-        this.totalLength = this.header.getLength() + stream.sum();
+    private void updateLength() {
+        long length = 0;
+        for (IndexEntry e: entries) {
+            length += e.getLength();
+        }
+        this.totalLength = this.header.getLength() + length;
     }
 
     /**
@@ -70,7 +73,7 @@ public class Index {
     public void updateIndex() throws IOException {
         this.header.write(this.entries.size());
         FileAttr attr = new FileAttr(DigestUtils.sha1(Files.readAllBytes(this.index))); // sha1 of index
-
+        // TODO: total length is somewhat off here.. figure out why
         this.totalLength += new IndexIO(this.index).apply(this.totalLength, Stream.of(new FileAttrWriteOperation(attr)));
     }
 }

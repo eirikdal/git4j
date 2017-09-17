@@ -23,7 +23,7 @@ public class BitWiseOperations {
      */
     public static byte[] intTo12BitByte(int integer) {
         return new byte[] {
-                (byte) ((integer >> 8) & 15),
+                (byte) ((integer >> 8) & 15), // bitwise AND with 0000 1111, we're not interested in the first four bits
                 (byte) (integer)
         };
     }
