@@ -18,21 +18,24 @@ public class ZeroPaddingWriteOperation implements WriteOperation {
     @Override
     public long write(RandomAccessFile file) {
         try {
-            file.write(new byte[] {0});
-            int padLen = getPadLen(file);
+            int padLen = getPadLen();
             if (padLen > 0) {
                 byte[] zeroPadding = new byte[padLen];
                 file.write(zeroPadding);
+            } else if (padLen == 0) { // no padding necessary, still need to zero-terminate tho..
+                file.write(new byte[1]);
+                padLen++;
             }
-            return (long) padLen + 1;
+            return (long) padLen;
         } catch (IOException e) {
             throw new WriteOperationException("Failed to write zero-padding", e);
         }
     }
 
-    private int getPadLen(RandomAccessFile file) throws IOException {
-        return (int) (workingFilePath.toFile().getName().length()) % 8;
-//        final int expLen = (int) (file.getFilePointer (workingFilePath.toFile().getName().length()+1));
-//        return (int) (file.getFilePointer() - expLen) % 8;
+    private int getPadLen() throws IOException {
+        final int actLen = 62 + workingFilePath.toFile().getName().length();
+        final int expLen = (actLen + 8) & ~7;
+        final int padLen = expLen - actLen - 0; // TODO: we don't support extended file names yet..
+        return padLen;
     }
 }
