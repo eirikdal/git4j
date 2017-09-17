@@ -23,6 +23,15 @@ public class Head {
         return head;
     }
 
+    public void update(SHA1 sha1) throws IOException {
+        Path master = Paths.get(repository.toString(), "refs", "heads", "master");
+        if (!master.getParent().toFile().exists()) {
+            master.getParent().toFile().mkdirs();
+            master.toFile().createNewFile();
+        }
+        Files.write(master, sha1.hash().getBytes());
+    }
+
     public static Head init(Path repository) throws IOException {
         Head head = new Head(repository);
         Files.write(Paths.get(repository.toString(), "HEAD"), "ref: refs/heads/master".getBytes());

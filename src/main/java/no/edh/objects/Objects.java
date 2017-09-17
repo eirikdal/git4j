@@ -2,7 +2,6 @@ package no.edh.objects;
 
 import no.edh.archive.zlib.ZlibDeflater;
 import no.edh.hashing.SHA1;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -30,23 +29,15 @@ public class Objects {
         return new GitBlob(object);
     }
 
-    public GitBlob addObject(GitBlob blob) throws IOException {
-        File objectsTmpFile = blob.getObjectsStream(blob);
+    public void addObject(GitObject gitObject) throws IOException {
+        File objectsTmpFile = gitObject.create();
 
-        Path object = getLocationOfObject(objectsTmpFile);
+        Path other = gitObject.objectPath();
+        Path object = objects.resolve(other);
+        if (!object.getParent().toFile().exists()) {
+            object.getParent().toFile().mkdirs();
+        }
 
         new ZlibDeflater().compress(objectsTmpFile, object.toFile());
-
-        blob.setObjectPath(object);
-        return blob;
-    }
-
-    private Path getLocationOfObject(File blob) throws IOException {
-        try (FileInputStream in = new FileInputStream(blob)) {
-            String hash = DigestUtils.sha1Hex(in);
-            Path object = objects.resolve(hash.substring(0,2)).resolve(hash.substring(2, hash.length()));
-            object.getParent().toFile().mkdir();
-            return object;
-        }
     }
 }

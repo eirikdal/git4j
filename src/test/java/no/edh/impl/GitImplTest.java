@@ -61,4 +61,21 @@ class GitImplTest {
         assertTrue(Paths.get(userDir, "testrepo", ".git", "index").toFile().exists());
     }
 
+    @Test
+    public void should_make_commit() throws IOException {
+        Paths.get(userDir, "testrepo2", ".git", "index").toFile().delete();
+        Paths.get(userDir, "testrepo2", "testfile").toFile().delete();
+        Paths.get(userDir, "testrepo2").toFile().mkdirs();
+        Path file = Files.write(Paths.get(userDir, "testrepo2", "testfile"), "test".getBytes());
+        Path file2 = Files.write(Paths.get(userDir, "testrepo2", "uuperduperfile"), "testtest".getBytes());
+
+        GitImpl git = new GitImpl("testrepo2");
+        git.init("testrepo2");
+        git.add(file);
+        git.add(file2);
+
+        git.commit("foobar");
+
+        assertTrue(Paths.get(userDir, "testrepo2", ".git", "index").toFile().exists());
+    }
 }

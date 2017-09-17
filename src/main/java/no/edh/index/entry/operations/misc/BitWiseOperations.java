@@ -1,5 +1,7 @@
 package no.edh.index.entry.operations.misc;
 
+import java.nio.ByteBuffer;
+
 public class BitWiseOperations {
     public static byte[] longToBytes(long unixTime) {
         return new byte[]{
@@ -26,6 +28,12 @@ public class BitWiseOperations {
                 (byte) ((integer >> 8) & 15), // bitwise AND with 0000 1111, we're not interested in the first four bits
                 (byte) (integer)
         };
+    }
+
+    public static int bytesTo12BitInt(byte[] bytes) {
+        // TODO: Doesn't at the moment support first 4 bits.
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        return byteBuffer.getInt();
     }
 
     public static byte[] merge(int bit4, byte[] int12bit) {

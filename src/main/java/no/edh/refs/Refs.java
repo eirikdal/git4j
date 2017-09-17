@@ -1,13 +1,17 @@
 package no.edh.refs;
 
+import no.edh.objects.Head;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Refs {
     private Path refs;
+    private Head head;
 
     public Refs(Path refs) {
         this.refs = refs;
+        this.head = new Head(refs.resolve("HEAD"));
     }
 
     public static Refs init(Path gitInternal) {

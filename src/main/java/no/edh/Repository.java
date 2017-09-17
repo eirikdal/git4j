@@ -22,9 +22,9 @@ public class Repository {
     private Index index;
 
     public Repository(String name) {
-        String userDir = System.getProperty("user.dir");
+        String userDir = System.getProperty("repo.dir");
 
-        this.gitInternal = Paths.get(userDir, name, ".git");
+        this.gitInternal = Paths.get(userDir, ".git");
         this.refs = new Refs(gitInternal.resolve("refs"));
         this.objects = new Objects(gitInternal.resolve("objects"));
         this.head = new Head(gitInternal.resolve("HEAD"));
@@ -32,7 +32,7 @@ public class Repository {
     }
 
     public Repository() {
-        String userDir = System.getProperty("user.dir");
+        String userDir = System.getProperty("repo.dir");
 
         this.gitInternal = Paths.get(userDir, ".git");
         this.refs = new Refs(gitInternal.resolve("refs"));

@@ -3,11 +3,9 @@ package no.edh.hashing;
 import no.edh.hashing.exceptions.HashEncodingException;
 import no.edh.objects.GitObject;
 import org.apache.commons.codec.digest.DigestUtils;
-import sun.security.provider.SHA;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class SHA1 {
 
@@ -17,9 +15,17 @@ public class SHA1 {
         this.source = source;
     }
 
+    public byte[] hashBytes() {
+        try (FileInputStream inputStream = new FileInputStream(source.create())) {
+            return DigestUtils.sha1(inputStream);
+        } catch (IOException e) {
+            throw new HashEncodingException(e);
+        }
+    }
+
     public String hash() {
-        try {
-            return DigestUtils.sha1Hex(source.getHashStream());
+        try (FileInputStream inputStream = new FileInputStream(source.create())) {
+            return DigestUtils.sha1Hex(inputStream);
         } catch (IOException e) {
             throw new HashEncodingException(e);
         }

@@ -13,7 +13,7 @@ public class Plumbing {
     }
 
     public SHA1 hashObject(GitObject object, boolean writeToObjects) throws IOException {
-        Archive archive = new Archive(object.getObjectPath());
+        Archive archive = new Archive(object.objectPath());
 
         return new SHA1(object);
     }

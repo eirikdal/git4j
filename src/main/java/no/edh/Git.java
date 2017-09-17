@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 public interface Git {
 
-    SHA1 commit(String message);
+    SHA1 commit(String message) throws IOException;
     void init(String name) throws IOException;
     void checkout(SHA1 object);
     void add(Path file) throws IOException;

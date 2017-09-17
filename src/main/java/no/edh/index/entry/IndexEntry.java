@@ -28,9 +28,9 @@ public class IndexEntry {
     }
 
     public void write() throws IOException {
-        BasicFileAttributes attr = Files.readAttributes(entry.getWorkingFilePath(), BasicFileAttributes.class);
+        BasicFileAttributes attr = Files.readAttributes(entry.getSourceFile(), BasicFileAttributes.class);
 
-        FileInputStream data = new FileInputStream(this.entry.getObjectsStream(this.entry));
+        FileInputStream data = new FileInputStream(this.entry.create());
         this.length = new IndexIO(this.index).apply(offset, Stream.of(
                 new FileTimeWriteOperation(attr.creationTime(), TimeType.SECONDS),// 4
                 new FileTimeWriteOperation(attr.creationTime(), TimeType.NANOSECONDS), //8
@@ -41,12 +41,12 @@ public class IndexEntry {
                 new FileAttrWriteOperation(new FileAttr(new byte[] { 0,0,(byte) 0201, (byte)0244 })), // mode 28
                 new FileAttrWriteOperation(new FileAttr(new byte[4])), //userId 32
                 new FileAttrWriteOperation(new FileAttr(new byte[4])), //groupId 36
-                new FileLengthWriteOperation(entry.getWorkingFilePath()), //fileLength 40
+                new FileLengthWriteOperation(entry.getSourceFile()), //fileLength 40
                 new FileAttrWriteOperation(new FileAttr(DigestUtils.sha1(data))), //sha1 60
-                new FileFlagsWriteOperation(entry.getWorkingFilePath()), //flags 62
+                new FileFlagsWriteOperation(entry.getSourceFile()), //flags 62
 //                new FileAttrWriteOperation(new FileAttr(new byte[] {0,0})), //flags 62
-                new FilePathWriteOperation(entry.getWorkingFilePath()), //path 70
-                new ZeroPaddingWriteOperation(entry.getWorkingFilePath()) //zero-padding 71
+                new FilePathWriteOperation(entry.getSourceFile()), //path 70
+                new ZeroPaddingWriteOperation(entry.getSourceFile()) //zero-padding 71
         ));
         data.close();
     }

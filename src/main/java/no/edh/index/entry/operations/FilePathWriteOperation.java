@@ -24,7 +24,7 @@ public class FilePathWriteOperation implements WriteOperation {
     @Override
     public long write(RandomAccessFile file) {
         try {
-            URI testrepo = Paths.get(System.getProperty("user.dir"), "testrepo").toUri();
+            URI testrepo = Paths.get(System.getProperty("repo.dir")).toUri();
             URI fileUri = path.toFile().toURI();
 
             URI relativize = testrepo.relativize(fileUri);

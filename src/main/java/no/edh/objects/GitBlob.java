@@ -1,61 +1,53 @@
 package no.edh.objects;
 
+import no.edh.hashing.SHA1;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class GitBlob implements GitObject, Closeable {
+public class GitBlob implements GitObject {
 
-    private Path workingFilePath;
-    private InputStream inputStream;
-    private Path objectPath;
+    private Path sourceFile;
 
-    public GitBlob(Path workingFilePath) {
-        this.workingFilePath = workingFilePath;
+    public GitBlob(Path sourceFile) {
+        this.sourceFile = sourceFile;
     }
 
     @Override
-    public Path getObjectPath() {
-        return objectPath;
+    public Path objectPath() throws IOException {
+        String hash = sha1().hash();
+
+        return Paths.get(hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
     }
 
-    public Path getWorkingFilePath() {
-        return workingFilePath;
+    public Path getSourceFile() {
+        return sourceFile;
     }
 
-    public InputStream getHashStream() throws IOException {
-        inputStream = Files.newInputStream(workingFilePath);
-        return inputStream;
+    @Override
+    public SHA1 sha1() throws IOException {
+        return new SHA1(this);
     }
 
-    public File getObjectsStream(GitBlob blob) throws IOException {
+    @Override
+    public File create() throws IOException {
         File tmpFile = File.createTempFile("foo", "bar");
 
         RandomAccessFile f = new RandomAccessFile(tmpFile, "rw");
         f.seek(0); // to the beginning
         f.write("blob ".getBytes());
-        f.write(String.format("%d", blob.getWorkingFilePath().toFile().length()).getBytes());
+        f.write(String.format("%d", this.getSourceFile().toFile().length()).getBytes());
         f.write(new byte[]{0});
         f.close();
 
-        try (FileInputStream input = new FileInputStream(blob.getWorkingFilePath().toFile());
+        try (FileInputStream input = new FileInputStream(this.getSourceFile().toFile());
              FileOutputStream output1 = new FileOutputStream(tmpFile, true)) {
             IOUtils.copy(input, output1);
         }
 
         return tmpFile;
-    }
-    public InputStream getContentStream() {
-        return inputStream;
-    }
-
-    public void close() throws IOException {
-        inputStream.close();
-    }
-
-    public void setObjectPath(Path objectPath) {
-        this.objectPath = objectPath;
     }
 }
