@@ -62,12 +62,6 @@ public class GitCommit implements GitObject{
 
         return tmpFile;
     }
-//    commit 286tree 6c92feea55a836de49c46106e35a5d13f97d5a5b
-//    parent 9f82927328f71645a9b8499293317458c19429b3
-//    author Eirik Daleng Haukedal <eirik.haukedal@gmail.no> 1505640052 +0200
-//    committer Eirik Daleng Haukedal <eirik.haukedal@gmail.no> 1505640052 +0200
-//
-//    Zero-padding finally working properly now..
 
     @Override
     public Path getSourceFile() {

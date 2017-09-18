@@ -25,10 +25,6 @@ public class GitTree implements GitObject {
     public SHA1 sha1() throws IOException {
         return new SHA1(this);
     }
-//
-//    100644 blob 5f2dbe11df91c879164ae1150f5577ac7263c1da    .gitignore
-//100644 blob 4b12d1c1925bcf262e4639cf3c8be91b789fbed3    LICENSE
-//100644 blob f8905c6dd205324330419cedbb57bf87d5a9cbda    README.md
 
     @Override
     public File create() throws IOException {
@@ -38,17 +34,16 @@ public class GitTree implements GitObject {
         for (GitObject object: objectList){
             baos.write("10644 ".getBytes());
             baos.write(object.getSourceFile().toFile().getName().getBytes());
-            baos.write(" ".getBytes());
+            baos.write(new byte[1]);
             baos.write(object.sha1().hashBytes());
-            baos.write(new byte[4]);
         }
 
         RandomAccessFile f = new RandomAccessFile(tmpFile, "rw");
         f.seek(0); // to the beginning
 
         f.write("tree ".getBytes());
-        f.write(baos.toByteArray().length);
-        f.write(0);
+        f.write(String.format("%d", baos.toString().length()).getBytes());
+        f.write(new byte[1]);
         f.write(baos.toByteArray());
 
         f.close();

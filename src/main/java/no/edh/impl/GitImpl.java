@@ -21,6 +21,7 @@ public class GitImpl implements Git {
     private Repository repository = new Repository();
 
     public GitImpl() {
+        System.setProperty("repo.dir", Paths.get(System.getProperty("user.dir")).toString());
     }
 
     public GitImpl(String name) {
@@ -56,6 +57,7 @@ public class GitImpl implements Git {
             logger.error("Error writing commit", e);
         }
         repository.getHead().update(commit.sha1());
+//        repository.getIndex().removeObjects();
         return new SHA1(commit);
     }
 
