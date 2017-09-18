@@ -19,8 +19,8 @@ public class Head {
         this.head = to;
     }
 
-    public SHA1 getHead() {
-        return head;
+    public String getHead() throws IOException {
+        return Files.readAllLines(Paths.get(repository.toString(), "refs", "heads", "master")).get(0); // hardcoded to master for now..
     }
 
     public void update(SHA1 sha1) throws IOException {

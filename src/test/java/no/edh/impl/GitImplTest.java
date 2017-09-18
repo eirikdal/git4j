@@ -76,6 +76,10 @@ class GitImplTest {
 
         git.commit("foobar");
 
+        Path file3 = Files.write(Paths.get(userDir, "testrepo2", "yummibear"), "testtest".getBytes());
+        git.add(file3);
+        git.commit("Second commit");
+
         assertTrue(Paths.get(userDir, "testrepo2", ".git", "index").toFile().exists());
     }
 }

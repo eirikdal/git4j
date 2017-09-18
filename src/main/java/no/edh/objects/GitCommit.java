@@ -15,6 +15,7 @@ public class GitCommit implements GitObject{
 
     private final long time;
     private GitTree tree;
+    private String parent;
     private String commitMsg;
 
     public GitCommit(GitTree tree, String commitMsg) {
@@ -43,6 +44,11 @@ public class GitCommit implements GitObject{
         baos.write("tree ");
         baos.write(tree.sha1().hash());
         baos.write("\n");
+        if (parent != null) {
+            baos.write("parent ");
+            baos.write(parent);
+            baos.write("\n");
+        }
         baos.write("author Eirik Daleng Haukedal <eirik.haukedal@gmail.com> ");
         baos.write(String.format("%d", time));
         baos.write(" +0200\n");
@@ -61,6 +67,10 @@ public class GitCommit implements GitObject{
         f.close();
 
         return tmpFile;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 
     @Override

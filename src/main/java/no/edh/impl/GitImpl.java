@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -32,11 +33,11 @@ public class GitImpl implements Git {
     /**
      * Find objects staged for commit in index file
      *
-     * Create a new tree with the list of objects from index file
+     * Create a new tree with the list of objects from index file. Store the new tree object in objects.
      *
-     * Make a new git commit file and store it in objects
+     * Make a new git commit object and store it in objects. Update parent if necessary.
      *
-     * Move HEAD to point to the new tree
+     * Move HEAD to point to the new commit
      * @param message
      * @return
      * @throws IOException
@@ -46,18 +47,13 @@ public class GitImpl implements Git {
 
         GitTree tree = new GitTree();
         tree.addObjects(objectList);
-        this.repository.getObjects().addObject(tree);
+        repository.getObjects().addObject(tree);
 
         GitCommit commit = new GitCommit(tree, message);
-        this.repository.getObjects().addObject(commit);
+        commit.setParent(repository.getHead().getHead());
+        repository.getObjects().addObject(commit);
 
-        try {
-            repository.getObjects().addObject(commit);
-        } catch (IOException e) {
-            logger.error("Error writing commit", e);
-        }
         repository.getHead().update(commit.sha1());
-//        repository.getIndex().removeObjects();
         return new SHA1(commit);
     }
 
