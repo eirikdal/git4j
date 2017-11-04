@@ -1,6 +1,5 @@
 package no.edh.objects;
 
-import com.sun.xml.internal.bind.v2.util.ByteArrayOutputStreamEx;
 import no.edh.hashing.SHA1;
 import org.apache.commons.io.IOUtils;
 
@@ -8,8 +7,6 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static no.edh.index.entry.operations.misc.BitWiseOperations.longToBytes;
 
 public class GitCommit implements GitObject{
 

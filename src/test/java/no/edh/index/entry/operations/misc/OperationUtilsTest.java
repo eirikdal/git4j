@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class OperationUtilsTest {
+public class OperationUtilsTest {
 
     @Test
     public void should_convert_int_to_byte() {

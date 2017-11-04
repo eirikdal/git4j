@@ -3,6 +3,7 @@ package no.edh.impl;
 import no.edh.Git;
 import no.edh.Repository;
 import no.edh.hashing.SHA1;
+import no.edh.index.entry.IndexEntry;
 import no.edh.objects.GitBlob;
 import no.edh.objects.GitCommit;
 import no.edh.objects.GitObject;
@@ -14,7 +15,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GitImpl implements Git {
 
@@ -43,14 +46,16 @@ public class GitImpl implements Git {
      * @throws IOException
      */
     public SHA1 commit(String message) throws IOException {
-        List<GitObject> objectList = repository.getIndex().findObjects();
+        List<IndexEntry> entries = repository.getIndex().readEntries();
+        List<GitObject> objects = entries.stream().map()
+
 
         GitTree tree = new GitTree();
-        tree.addObjects(objectList);
+        tree.addObjects(entries);
         repository.getObjects().addObject(tree);
 
         GitCommit commit = new GitCommit(tree, message);
-        commit.setParent(repository.getHead().getHead());
+//        commit.setParent(repository.getHead().getHead());
         repository.getObjects().addObject(commit);
 
         repository.getHead().update(commit.sha1());
@@ -61,18 +66,37 @@ public class GitImpl implements Git {
         repository.create(Paths.get(System.getProperty("repo.dir"), name));
     }
 
+    /**
+     *  TODO:
+     *
+     *  Make sure staging area is clean
+     *
+     * Create a new ref for the branch if necessary (if so, set sha1 of ref to current branch unless otherwise specified)
+     *
+     * Update HEAD to point to the other ref (branch)
+     *
+     * Sanitize working area (difficult part) // otherwise we can treat this as a soft reset
+     *
+     * @param object
+     */
     public void checkout(SHA1 object) {
 
     }
 
     @Override
     public void add(Path file) throws IOException {
-        if (!repository.getIndex().getPath().toFile().exists()) {
-            repository.getIndex().init();
-        }
-
+        repository.getIndex().init();
+        // TODO: Sort index entries
         GitBlob blob = new GitBlob(file);
         repository.getObjects().addObject(blob);
+        List<IndexEntry> entries = repository.getIndex().readEntries();
+        List<GitObject> objects = entries.stream()
+                .map(indexEntry -> Paths.get(System.getProperty("repo.dir"), indexEntry.getPath().toString()))
+                .map(GitBlob::new)
+                .collect(Collectors.toList());
+        objects.add(blob);
+        objects.sort(Comparator.comparing(o -> o.getSourceFile().toFile().getName()));
+        objects.forEach(gitObject -> repository.getIndex().addBlobToIndex((GitBlob) gitObject));
         repository.getIndex().addBlobToIndex(blob);
         repository.getIndex().updateIndex();
     }

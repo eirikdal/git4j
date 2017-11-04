@@ -13,7 +13,7 @@ import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IndexEntryTest {
+public class IndexEntryTest {
 
     public static final int ENTRY_LENGTH = 64;
 

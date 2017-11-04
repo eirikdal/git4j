@@ -1,6 +1,5 @@
 package no.edh.objects;
 
-import com.sun.xml.internal.bind.v2.util.ByteArrayOutputStreamEx;
 import no.edh.hashing.SHA1;
 import org.apache.commons.io.IOUtils;
 
@@ -8,8 +7,6 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
-import static no.edh.index.entry.operations.misc.BitWiseOperations.longToBytes;
 
 public class GitTree implements GitObject {
     private List<GitObject> objectList;
@@ -30,7 +27,7 @@ public class GitTree implements GitObject {
     public File create() throws IOException {
         File tmpFile = File.createTempFile("foo", "bar");
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStreamEx();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (GitObject object: objectList){
             baos.write("10644 ".getBytes());
             baos.write(object.getSourceFile().toFile().getName().getBytes());

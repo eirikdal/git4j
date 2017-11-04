@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class GitImplTest {
+public class GitImplTest {
 
     private static final String userDir = System.getProperty("user.dir");
 
