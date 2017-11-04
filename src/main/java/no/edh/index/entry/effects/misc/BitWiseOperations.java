@@ -1,4 +1,4 @@
-package no.edh.index.entry.operations.misc;
+package no.edh.index.entry.effects.misc;
 
 import java.nio.ByteBuffer;
 
@@ -11,6 +11,13 @@ public class BitWiseOperations {
                 (byte) unixTime
 
         };
+    }
+
+    public static long bytesToLong(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+        buffer.put(bytes);
+        buffer.flip();
+        return buffer.getInt();
     }
 
     public static byte intToByte(int integer) {

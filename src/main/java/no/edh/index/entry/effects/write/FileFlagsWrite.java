@@ -1,12 +1,12 @@
-package no.edh.index.entry.operations;
+package no.edh.index.entry.effects.write;
 
-import no.edh.index.io.WriteOperation;
+import no.edh.index.io.SideEffect;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 
-import static no.edh.index.entry.operations.misc.BitWiseOperations.intTo12BitByte;
+import static no.edh.index.entry.effects.misc.BitWiseOperations.intTo12BitByte;
 
 /**
  * (High to low bits)
@@ -15,15 +15,15 @@ import static no.edh.index.entry.operations.misc.BitWiseOperations.intTo12BitByt
  * 2-bit: merge stage
  * 12-bit: path\file name length (if less than 0xFFF)
  */
-public class FileFlagsWriteOperation implements WriteOperation {
+public class FileFlagsWrite implements SideEffect {
     private Path workingFilePath;
 
-    public FileFlagsWriteOperation(Path workingFilePath) {
+    public FileFlagsWrite(Path workingFilePath) {
         this.workingFilePath = workingFilePath;
     }
 
     @Override
-    public long write(RandomAccessFile file) {
+    public long apply(RandomAccessFile file) {
         byte[] bytes = intTo12BitByte(workingFilePath.toFile().getName().length());
 
         int firstFourBitHeaders = 0; // for now we don't support merge, assume-unchanged, etc.

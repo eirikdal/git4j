@@ -1,8 +1,11 @@
 package no.edh.index.header;
 
-import no.edh.index.header.operations.FileCounterWriteOperation;
-import no.edh.index.header.operations.HeaderWriteOperation;
-import no.edh.index.header.operations.VersionWriteOperation;
+import no.edh.index.header.effects.read.FileCounterRead;
+import no.edh.index.header.effects.read.HeaderRead;
+import no.edh.index.header.effects.read.VersionRead;
+import no.edh.index.header.effects.write.FileCounterWrite;
+import no.edh.index.header.effects.write.HeaderWrite;
+import no.edh.index.header.effects.write.VersionWrite;
 import no.edh.index.io.IndexIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,10 @@ public class IndexHeader {
     private Path index;
     private long length;
 
+    private Long count = 0L;
+    private String header = "DIRC";
+    private Long version = 2L;
+
     public IndexHeader(Path index) {
         this.index = index;
     }
@@ -29,18 +36,30 @@ public class IndexHeader {
      */
     public void init() throws IOException {
         this.length = new IndexIO(this.index).apply(0, Stream.of(
-                new HeaderWriteOperation(),
-                new VersionWriteOperation(),
-                new FileCounterWriteOperation(count -> 0L) // initialize with 0
+                new HeaderWrite(this.header),
+                new VersionWrite(this.version),
+                new FileCounterWrite((current) -> this.count)
         ));
     }
 
     public void write(long count) {
         this.length = new IndexIO(this.index).apply(0, Stream.of(
-                new HeaderWriteOperation(),
-                new VersionWriteOperation(),
-                new FileCounterWriteOperation(current -> count) // initialize with 0
+                new HeaderWrite(this.header),
+                new VersionWrite(this.version),
+                new FileCounterWrite(current -> count) // initialize with 0
         ));
+    }
+
+    public static IndexHeader read(Path index) {
+        IndexHeader indexEntry = new IndexHeader(index);
+
+        indexEntry.length = new IndexIO(index).apply(0, Stream.of(
+                new HeaderRead(indexEntry::setHeader),
+                new VersionRead(indexEntry::setVersion),
+                new FileCounterRead(indexEntry::setCount)
+        ));
+
+        return indexEntry;
     }
 
     public long getLength() {
@@ -49,5 +68,21 @@ public class IndexHeader {
 
     public void setLength(Integer length) {
         this.length = length;
+    }
+
+    public void setCount(Long count) {
+        this.count = count;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public Long getCount() {
+        return count;
     }
 }

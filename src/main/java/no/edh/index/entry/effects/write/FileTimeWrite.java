@@ -1,31 +1,31 @@
-package no.edh.index.entry.operations;
+package no.edh.index.entry.effects.write;
 
-import no.edh.index.entry.operations.exceptions.WriteOperationException;
-import no.edh.index.entry.operations.misc.TimeType;
-import no.edh.index.io.WriteOperation;
+import no.edh.index.entry.effects.exceptions.SideEffectException;
+import no.edh.index.io.SideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.attribute.FileTime;
+import java.util.concurrent.TimeUnit;
 
-import static no.edh.index.entry.operations.misc.BitWiseOperations.longToBytes;
+import static no.edh.index.entry.effects.misc.BitWiseOperations.longToBytes;
 
-public class FileTimeWriteOperation implements WriteOperation {
+public class FileTimeWrite implements SideEffect {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileTimeWriteOperation.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileTimeWrite.class);
 
     private FileTime time;
-    private TimeType timeType;
+    private TimeUnit timeType;
 
-    public FileTimeWriteOperation(FileTime time, TimeType timeType) {
+    public FileTimeWrite(FileTime time, TimeUnit timeType) {
         this.time = time;
         this.timeType = timeType;
     }
 
     @Override
-    public long write(RandomAccessFile file) {
+    public long apply(RandomAccessFile file) {
         try {
             byte[] bytes = new byte[0];
             switch (timeType) {
@@ -45,7 +45,7 @@ public class FileTimeWriteOperation implements WriteOperation {
             return bytes.length;
         } catch (IOException e) {
             logger.error("Error writing file time", e);
-            throw new WriteOperationException("Error writing to index file", e);
+            throw new SideEffectException("Error writing to index file", e);
         }
     }
 }

@@ -29,7 +29,7 @@ public class GitTree implements GitObject {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (GitObject object: objectList){
-            baos.write("10644 ".getBytes());
+            baos.write("100644 ".getBytes());
             baos.write(object.getSourceFile().toFile().getName().getBytes());
             baos.write(new byte[1]);
             baos.write(object.sha1().hashBytes());

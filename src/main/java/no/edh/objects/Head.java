@@ -20,7 +20,12 @@ public class Head {
     }
 
     public String getHead() throws IOException {
-        return Files.readAllLines(Paths.get(repository.toString(), "refs", "heads", "master")).get(0); // hardcoded to master for now..
+        Path path = Paths.get(repository.toString(), "refs", "heads", "master");
+        return Files.readAllLines(path).get(0); // hardcoded to master for now..
+    }
+
+    public boolean exists() {
+        return Paths.get(repository.toString(), "refs", "heads", "master").toFile().exists();
     }
 
     public void update(SHA1 sha1) throws IOException {

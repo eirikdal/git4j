@@ -48,6 +48,7 @@ public class GitImplTest {
         Path file4 = Files.write(Paths.get(userDir, "testrepo", "zoramora"), "ASDFSo so so so ..".getBytes());
 
         GitImpl git = new GitImpl("testrepo");
+        git.init();
         git.add(file);
         git.add(file2);
         git.add(file3);
@@ -67,10 +68,10 @@ public class GitImplTest {
         Paths.get(userDir, "testrepo2", "testfile").toFile().delete();
         Paths.get(userDir, "testrepo2").toFile().mkdirs();
         Path file = Files.write(Paths.get(userDir, "testrepo2", "testfile"), "test".getBytes());
-        Path file2 = Files.write(Paths.get(userDir, "testrepo2", "uuperduperfile"), "testtest".getBytes());
+        Path file2 = Files.write(Paths.get(userDir, "testrepo2", "suuperduperfile"), "testtest".getBytes());
 
         GitImpl git = new GitImpl("testrepo2");
-        git.init("testrepo2");
+        git.init();
         git.add(file);
         git.add(file2);
 

@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
@@ -47,19 +46,24 @@ public class GitImpl implements Git {
      */
     public SHA1 commit(String message) throws IOException {
         List<IndexEntry> entries = repository.getIndex().readEntries();
-        List<GitObject> objects = entries.stream().map()
-
+        List<GitObject> objects = map(entries);
 
         GitTree tree = new GitTree();
-        tree.addObjects(entries);
+        tree.addObjects(objects);
         repository.getObjects().addObject(tree);
 
         GitCommit commit = new GitCommit(tree, message);
-//        commit.setParent(repository.getHead().getHead());
+        if (repository.getHead().exists()) {
+            commit.setParent(repository.getHead().getHead());
+        }
         repository.getObjects().addObject(commit);
-
         repository.getHead().update(commit.sha1());
         return new SHA1(commit);
+    }
+
+    public void init() throws IOException {
+        repository.create(Paths.get(System.getProperty("repo.dir")));
+        repository.getIndex().init();
     }
 
     public void init(String name) throws IOException {
@@ -85,20 +89,24 @@ public class GitImpl implements Git {
 
     @Override
     public void add(Path file) throws IOException {
-        repository.getIndex().init();
-        // TODO: Sort index entries
         GitBlob blob = new GitBlob(file);
+        blob.create();
+
         repository.getObjects().addObject(blob);
         List<IndexEntry> entries = repository.getIndex().readEntries();
-        List<GitObject> objects = entries.stream()
-                .map(indexEntry -> Paths.get(System.getProperty("repo.dir"), indexEntry.getPath().toString()))
-                .map(GitBlob::new)
-                .collect(Collectors.toList());
+        repository.getIndex().removeEntries();
+        List<GitObject> objects = map(entries);
         objects.add(blob);
         objects.sort(Comparator.comparing(o -> o.getSourceFile().toFile().getName()));
-        objects.forEach(gitObject -> repository.getIndex().addBlobToIndex((GitBlob) gitObject));
-        repository.getIndex().addBlobToIndex(blob);
+        objects.forEach(gitObject -> repository.getIndex().addBlobToIndex(gitObject));
         repository.getIndex().updateIndex();
+    }
+
+    private List<GitObject> map(List<IndexEntry> entries) {
+        return entries.stream()
+                .map(indexEntry -> Paths.get(System.getProperty("repo.dir"), indexEntry.getObject().getSourceFile().toString()))
+                .map(GitBlob::new)
+                .collect(Collectors.toList());
     }
 
     public static void main(String[] args) {

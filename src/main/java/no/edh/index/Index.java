@@ -1,11 +1,13 @@
 package no.edh.index;
 
 import no.edh.index.entry.IndexEntry;
-import no.edh.index.entry.operations.FileAttrWriteOperation;
+import no.edh.index.entry.effects.read.FileAttrRead;
+import no.edh.index.entry.effects.write.FileAttrWrite;
 import no.edh.index.file.FileAttr;
 import no.edh.index.header.IndexHeader;
 import no.edh.index.io.IndexIO;
 import no.edh.objects.GitBlob;
+import no.edh.objects.GitObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +24,7 @@ public class Index {
 
     private static final Logger logger = LoggerFactory.getLogger(Index.class);
 
-    public static final int OFFSET_FIRST_INDEX_ENTRY = 12;
-    public static final int OFFSET_SHA1 = 40;
-    public static final int SIZE_OF_SHA1 = 20;
-    public static final int SIZE_OF_FLAGS = 4;
-    public static final int HEADER_SIZE_NUMBER_OF_FILES = 4;
-    public static final int START_OF_HEADER_NUMBER_OF_FILES = 8;
+    public static final long OFFSET_FIRST_INDEX_ENTRY = 12L;
 
     private Path index;
     private List<IndexEntry> entries = new ArrayList<IndexEntry>();
@@ -46,7 +43,7 @@ public class Index {
     public void init() throws IOException {
         this.index.toFile().createNewFile();
         this.header.init();
-        this.totalLength += this.header.getLength();
+        this.totalLength = this.header.getLength();
     }
 
     /**
@@ -55,7 +52,7 @@ public class Index {
      * @param file
      * @throws IOException
      */
-    public void addBlobToIndex(GitBlob file) {
+    public void addBlobToIndex(GitObject file) {
         try {
             writeIndexEntry(file);
             updateLength();
@@ -64,18 +61,18 @@ public class Index {
         }
     }
 
-    private void writeIndexEntry(GitBlob blob) throws IOException {
-        Long lengthOfEntries = entries.stream().mapToLong(value -> value.getLength()).sum();
+    private void writeIndexEntry(GitObject path) throws IOException {
+        Long lengthOfEntries = entries.stream().mapToLong(IndexEntry::getIndexEntryLength).sum();
         long offset = header.getLength() + lengthOfEntries;
-        IndexEntry entry = new IndexEntry(index, blob, offset);
+        IndexEntry entry = new IndexEntry(index, path, offset);
         entry.write();
-        entries.add(entry);
+        this.entries.add(entry);
     }
 
     private void updateLength() {
         long length = 0;
         for (IndexEntry e: entries) {
-            length += e.getLength();
+            length += e.getIndexEntryLength();
         }
         this.totalLength = this.header.getLength() + length;
     }
@@ -88,28 +85,32 @@ public class Index {
     public void updateIndex() throws IOException {
         this.header.write(this.entries.size());
         FileAttr attr = new FileAttr(DigestUtils.sha1(Files.readAllBytes(this.index))); // sha1 of index
-        this.totalLength += new IndexIO(this.index).apply(this.totalLength, Stream.of(new FileAttrWriteOperation(attr)));
+        this.totalLength += new IndexIO(this.index).apply(this.totalLength, Stream.of(new FileAttrWrite(attr)));
     }
 
     public List<IndexEntry> readEntries() {
         List<IndexEntry> entries = new ArrayList<>();
-        try (RandomAccessFile fos = new RandomAccessFile(index.toFile(), "r")) {
-            int numberOfFiles = readNumberOfFiles(fos);
+        IndexHeader header = IndexHeader.read(index);
 
-            fos.seek(OFFSET_FIRST_INDEX_ENTRY); // start with the first file
-            for (int i = 0; i < numberOfFiles; i++) {
-                entries.add(IndexEntry.read(fos));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        Long offset = OFFSET_FIRST_INDEX_ENTRY;
+        for (int i = 0; i < header.getCount(); i++) {
+            IndexEntry entry = IndexEntry.read(index, offset);
+            entries.add(entry);
+            offset += entry.getIndexEntryLength();
         }
+
         return entries;
     }
 
-    private int readNumberOfFiles(RandomAccessFile fos) throws IOException {
-        byte[] numberOfFileBytes = new byte[HEADER_SIZE_NUMBER_OF_FILES];
-        fos.seek(START_OF_HEADER_NUMBER_OF_FILES);
-        fos.read(numberOfFileBytes, 0, HEADER_SIZE_NUMBER_OF_FILES);
-        return ByteBuffer.wrap(numberOfFileBytes).getInt();
+    public void delete() throws IOException {
+        this.index.toFile().delete();
+        this.index.toFile().createNewFile();
+        this.entries = new ArrayList<>();
+        this.header.init();
+        this.totalLength = this.header.getLength();
+    }
+
+    public void removeEntries() {
+        this.entries = new ArrayList<>();
     }
 }

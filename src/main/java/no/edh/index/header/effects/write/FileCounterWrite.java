@@ -1,7 +1,7 @@
-package no.edh.index.header.operations;
+package no.edh.index.header.effects.write;
 
-import no.edh.index.entry.operations.exceptions.WriteOperationException;
-import no.edh.index.io.WriteOperation;
+import no.edh.index.entry.effects.exceptions.SideEffectException;
+import no.edh.index.io.SideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.function.LongFunction;
 
-import static no.edh.index.entry.operations.misc.BitWiseOperations.longToBytes;
+import static no.edh.index.entry.effects.misc.BitWiseOperations.longToBytes;
 
-public class FileCounterWriteOperation implements WriteOperation {
-    private static final Logger logger = LoggerFactory.getLogger(FileCounterWriteOperation.class);
+public class FileCounterWrite implements SideEffect {
+    private static final Logger logger = LoggerFactory.getLogger(FileCounterWrite.class);
 
     private static final int OFFSET = 8;
     private LongFunction<Long> longFunction;
@@ -22,7 +22,7 @@ public class FileCounterWriteOperation implements WriteOperation {
      *
      * @param longFunction
      */
-    public FileCounterWriteOperation(LongFunction<Long> longFunction) {
+    public FileCounterWrite(LongFunction<Long> longFunction) {
         this.longFunction = longFunction;
     }
 
@@ -32,7 +32,7 @@ public class FileCounterWriteOperation implements WriteOperation {
      * @param index file
      */
     @Override
-    public long write(RandomAccessFile index) {
+    public long apply(RandomAccessFile index) {
         try {
             long count = 0;
             if (index.length() > 8) {
@@ -44,7 +44,7 @@ public class FileCounterWriteOperation implements WriteOperation {
             return index.getFilePointer() - OFFSET;
         } catch (IOException e) {
             logger.warn("Error writing file counter to index header", e);
-            throw new WriteOperationException("Error writing to index file", e);
+            throw new SideEffectException("Error writing to index file", e);
         }
     }
 }

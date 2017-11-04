@@ -1,22 +1,22 @@
-package no.edh.index.entry.operations;
+package no.edh.index.entry.effects.write;
 
-import no.edh.index.entry.operations.exceptions.WriteOperationException;
-import no.edh.index.io.WriteOperation;
+import no.edh.index.entry.effects.exceptions.SideEffectException;
+import no.edh.index.io.SideEffect;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 
-public class ZeroPaddingWriteOperation implements WriteOperation {
+public class ZeroPaddingWrite implements SideEffect {
     private Path workingFilePath;
     private static final int minPathLength = 0xfff;
 
-    public ZeroPaddingWriteOperation(Path workingFilePath) {
+    public ZeroPaddingWrite(Path workingFilePath) {
         this.workingFilePath = workingFilePath;
     }
 
     @Override
-    public long write(RandomAccessFile file) {
+    public long apply(RandomAccessFile file) {
         try {
             int padLen = getPadLen();
             if (padLen > 0) {
@@ -28,7 +28,7 @@ public class ZeroPaddingWriteOperation implements WriteOperation {
             }
             return (long) padLen;
         } catch (IOException e) {
-            throw new WriteOperationException("Failed to write zero-padding", e);
+            throw new SideEffectException("Failed to write zero-padding", e);
         }
     }
 

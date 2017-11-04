@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class IndexIO {
@@ -26,12 +25,12 @@ public class IndexIO {
      *
      * @return length of bytes written
      */
-    public long apply(long offset, Stream<WriteOperation> ops) {
+    public long apply(long offset, Stream<SideEffect> ops) {
         long length = -1L;
         try (RandomAccessFile fos = new RandomAccessFile(index.toFile(), "rwd")) {
             fos.seek(offset);
 
-            length = ops.mapToLong(writeOperation -> writeOperation.write(fos)).sum();
+            length = ops.mapToLong(sideEffect -> sideEffect.apply(fos)).sum();
             fos.close();
         } catch (IOException e) {
             logger.warn("Could not write to index file", e);

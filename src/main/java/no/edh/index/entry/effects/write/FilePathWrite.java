@@ -1,7 +1,7 @@
-package no.edh.index.entry.operations;
+package no.edh.index.entry.effects.write;
 
-import no.edh.index.entry.operations.exceptions.WriteOperationException;
-import no.edh.index.io.WriteOperation;
+import no.edh.index.entry.effects.exceptions.SideEffectException;
+import no.edh.index.io.SideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,18 +11,18 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FilePathWriteOperation implements WriteOperation {
+public class FilePathWrite implements SideEffect {
 
-    private static final Logger logger = LoggerFactory.getLogger(FilePathWriteOperation.class);
+    private static final Logger logger = LoggerFactory.getLogger(FilePathWrite.class);
 
     private Path path;
 
-    public FilePathWriteOperation(Path path) {
+    public FilePathWrite(Path path) {
         this.path = path;
     }
 
     @Override
-    public long write(RandomAccessFile file) {
+    public long apply(RandomAccessFile file) {
         try {
             URI testrepo = Paths.get(System.getProperty("repo.dir")).toUri();
             URI fileUri = path.toFile().toURI();
@@ -34,7 +34,7 @@ public class FilePathWriteOperation implements WriteOperation {
             return bytes.length;
         } catch (IOException e) {
             logger.error("Error writing file path entry", e);
-            throw new WriteOperationException("Error writing to index file", e);
+            throw new SideEffectException("Error writing to index file", e);
         }
     }
 }

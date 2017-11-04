@@ -1,4 +1,4 @@
-package no.edh.index.entry.operations.misc;
+package no.edh.index.entry.effects.misc;
 
 import org.junit.jupiter.api.Test;
 
