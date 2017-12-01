@@ -1,21 +1,19 @@
 package no.edh.objects;
 
 import no.edh.hashing.SHA1;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class GitCommit implements GitObject{
+public class Commit implements GitObject{
 
     private final long time;
-    private GitTree tree;
+    private Tree tree;
     private String parent;
     private String commitMsg;
 
-    public GitCommit(GitTree tree, String commitMsg) {
+    public Commit(Tree tree, String commitMsg) {
         this.tree = tree;
         this.commitMsg = commitMsg;
         this.time = System.currentTimeMillis();

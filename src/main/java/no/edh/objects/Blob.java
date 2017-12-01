@@ -8,11 +8,11 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class GitBlob implements GitObject {
+public class Blob implements GitObject {
 
     private Path sourceFile;
 
-    public GitBlob(Path sourceFile) {
+    public Blob(Path sourceFile) {
         this.sourceFile = sourceFile;
     }
 

@@ -1,11 +1,9 @@
 package no.edh.impl;
 
-import no.edh.Git;
 import no.edh.Repository;
 import no.edh.hashing.SHA1;
-import no.edh.objects.GitBlob;
+import no.edh.objects.Blob;
 import no.edh.objects.GitObject;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -55,7 +53,7 @@ public class GitImplTest {
         git.add(file4);
 
         Repository repository = new Repository();
-        GitBlob blob = new GitBlob(file);
+        Blob blob = new Blob(file);
         SHA1 sha1 = new SHA1(blob);
         GitObject gitObject = repository.getObjects().find(sha1);
 

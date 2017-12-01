@@ -1,6 +1,7 @@
 package no.edh.index.entry;
 
 import no.edh.hashing.SHA1;
+import no.edh.index.entry.effects.exceptions.IndexEntryReadException;
 import no.edh.index.entry.effects.read.*;
 import no.edh.index.entry.effects.write.*;
 import no.edh.index.file.FileAttr;
@@ -50,7 +51,7 @@ public class IndexEntry {
     }
 
     private void read(GitObject entry) {
-        try(FileInputStream fis = new FileInputStream(object.getSourceFile().toFile())) {
+        try {
             BasicFileAttributes attr = Files.readAttributes(entry.getSourceFile(), BasicFileAttributes.class);
             this.creationTime = attr.creationTime();
             this.modifiedTime = attr.lastModifiedTime();
@@ -63,6 +64,7 @@ public class IndexEntry {
             this.sha1 = entry.sha1().hashBytes();
         } catch (IOException e) {
             logger.error("Error reading index entry", e);
+            throw new IndexEntryReadException("Error reading index entry", e);
         }
     }
 

@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class GitTree implements GitObject {
+public class Tree implements GitObject {
     private List<GitObject> objectList;
 
     @Override

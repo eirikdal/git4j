@@ -1,19 +1,16 @@
 package no.edh.index;
 
 import no.edh.index.entry.IndexEntry;
-import no.edh.index.entry.effects.read.FileAttrRead;
 import no.edh.index.entry.effects.write.FileAttrWrite;
 import no.edh.index.file.FileAttr;
 import no.edh.index.header.IndexHeader;
 import no.edh.index.io.IndexIO;
-import no.edh.objects.GitBlob;
 import no.edh.objects.GitObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
