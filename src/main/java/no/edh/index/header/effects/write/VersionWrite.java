@@ -2,14 +2,14 @@ package no.edh.index.header.effects.write;
 
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.index.entry.effects.misc.BitWiseOperations;
-import no.edh.index.io.SideEffect;
+import no.edh.io.SideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class VersionWrite implements SideEffect {
+public class VersionWrite implements SideEffect<RandomAccessFile> {
     private static final Logger logger = LoggerFactory.getLogger(VersionWrite.class);
 
     private static final int OFFSET = 4;

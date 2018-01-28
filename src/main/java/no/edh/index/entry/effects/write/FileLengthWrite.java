@@ -1,7 +1,7 @@
 package no.edh.index.entry.effects.write;
 
 import no.edh.index.entry.effects.exceptions.SideEffectException;
-import no.edh.index.io.SideEffect;
+import no.edh.io.SideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 
 import static no.edh.index.entry.effects.misc.BitWiseOperations.longToBytes;
 
-public class FileLengthWrite implements SideEffect {
+public class FileLengthWrite implements SideEffect<RandomAccessFile> {
     private static final Logger logger = LoggerFactory.getLogger(FileLengthWrite.class);
 
     private Path entry;

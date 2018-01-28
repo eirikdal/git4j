@@ -1,6 +1,7 @@
 package no.edh.index.entry.effects.write;
 
-import no.edh.index.io.SideEffect;
+import no.edh.index.entry.effects.exceptions.SideEffectException;
+import no.edh.io.SideEffect;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -15,7 +16,7 @@ import static no.edh.index.entry.effects.misc.BitWiseOperations.intTo12BitByte;
  * 2-bit: merge stage
  * 12-bit: path\file name length (if less than 0xFFF)
  */
-public class FileFlagsWrite implements SideEffect {
+public class FileFlagsWrite implements SideEffect<RandomAccessFile> {
     private Path workingFilePath;
 
     public FileFlagsWrite(Path workingFilePath) {
@@ -31,10 +32,10 @@ public class FileFlagsWrite implements SideEffect {
 
         try {
             file.write(bytes);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        return bytes.length;
+            return bytes.length;
+        } catch (IOException e) {
+            throw new SideEffectException("Error writing to index file", e);
+        }
     }
 }

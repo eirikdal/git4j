@@ -4,7 +4,7 @@ import no.edh.index.entry.IndexEntry;
 import no.edh.index.entry.effects.write.FileAttrWrite;
 import no.edh.index.file.FileAttr;
 import no.edh.index.header.IndexHeader;
-import no.edh.index.io.IndexIO;
+import no.edh.io.SideEffectWriter;
 import no.edh.objects.GitObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -50,15 +50,11 @@ public class Index {
      * @throws IOException
      */
     public void addBlobToIndex(GitObject file) {
-        try {
-            writeIndexEntry(file);
-            updateLength();
-        } catch (IOException e) {
-            logger.error("Failed to write index file", e);
-        }
+        writeIndexEntry(file);
+        updateLength();
     }
 
-    private void writeIndexEntry(GitObject path) throws IOException {
+    private void writeIndexEntry(GitObject path) {
         Long lengthOfEntries = entries.stream().mapToLong(IndexEntry::getIndexEntryLength).sum();
         long offset = header.getLength() + lengthOfEntries;
         IndexEntry entry = new IndexEntry(index, path, offset);
@@ -82,7 +78,7 @@ public class Index {
     public void updateIndex() throws IOException {
         this.header.write(this.entries.size());
         FileAttr attr = new FileAttr(DigestUtils.sha1(Files.readAllBytes(this.index))); // sha1 of index
-        this.totalLength += new IndexIO(this.index).apply(this.totalLength, Stream.of(new FileAttrWrite(attr)));
+        this.totalLength += new SideEffectWriter(this.index).apply(this.totalLength, Stream.of(new FileAttrWrite(attr)));
     }
 
     public List<IndexEntry> readEntries() {
@@ -97,14 +93,6 @@ public class Index {
         }
 
         return entries;
-    }
-
-    public void delete() throws IOException {
-        this.index.toFile().delete();
-        this.index.toFile().createNewFile();
-        this.entries = new ArrayList<>();
-        this.header.init();
-        this.totalLength = this.header.getLength();
     }
 
     public void removeEntries() {

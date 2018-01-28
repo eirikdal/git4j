@@ -1,16 +1,14 @@
 package no.edh.index.entry.effects.write;
 
-import no.edh.hashing.SHA1;
 import no.edh.index.entry.effects.exceptions.SideEffectException;
-import no.edh.index.file.FileAttr;
-import no.edh.index.io.SideEffect;
+import no.edh.io.SideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class FileHashWrite implements SideEffect {
+public class FileHashWrite implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileHashWrite.class);
 

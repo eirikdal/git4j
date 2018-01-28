@@ -1,14 +1,22 @@
 package no.edh.objects;
 
 import no.edh.hashing.SHA1;
+import no.edh.io.SideEffectWriter;
+import no.edh.objects.commit.Author;
+import no.edh.objects.commit.Committer;
+import no.edh.objects.effects.write.CommitWrite;
+import no.edh.objects.effects.write.ObjectHeadWriter;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
-public class Commit implements GitObject{
+public class Commit implements GitObject {
 
     private final long time;
+    private Author author;
+    private Committer committer;
     private Tree tree;
     private String parent;
     private String commitMsg;
@@ -20,46 +28,23 @@ public class Commit implements GitObject{
     }
 
     @Override
-    public Path objectPath() throws IOException {
+    public Path objectPath() {
         String hash = sha1().hash();
 
         return Paths.get(hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
     }
 
     @Override
-    public SHA1 sha1() throws IOException {
+    public SHA1 sha1() {
         return new SHA1(this);
     }
 
     @Override
     public File create() throws IOException {
-        File tmpFile = File.createTempFile("foo", "bar");
+        File tmpFile = File.createTempFile("commit", "file");
 
-        StringWriter baos = new StringWriter();
-        baos.write("tree ");
-        baos.write(tree.sha1().hash());
-        baos.write("\n");
-        if (parent != null) {
-            baos.write("parent ");
-            baos.write(parent);
-            baos.write("\n");
-        }
-        baos.write("author Eirik Daleng Haukedal <eirik.haukedal@gmail.com> ");
-        baos.write(String.format("%d", time));
-        baos.write(" +0200\n");
-        baos.write("committer GitHub <noreply@github.com> ");
-        baos.write(String.format("%d", time));
-        baos.write(" +0200\n\n");
-        baos.write(commitMsg);
-        baos.write("\n\n");
-        
-        RandomAccessFile f = new RandomAccessFile(tmpFile, "rw");
-        f.seek(0); // to the beginning
-        f.write("commit ".getBytes());
-        f.write(String.format("%d", baos.toString().length()).getBytes());
-        f.write(new byte[] {0});
-        f.write(baos.toString().getBytes());
-        f.close();
+        SideEffectWriter objectIO = new SideEffectWriter(tmpFile.toPath());
+        objectIO.apply(0, Stream.of(new CommitWrite(this)));
 
         return tmpFile;
     }
@@ -71,5 +56,34 @@ public class Commit implements GitObject{
     @Override
     public Path getSourceFile() {
         return null;
+    }
+
+    @Override
+    public ObjectType objectType() {
+        return ObjectType.Commit;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public Committer getCommitter() {
+        return committer;
+    }
+
+    public Tree getTree() {
+        return tree;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public String getCommitMsg() {
+        return commitMsg;
     }
 }

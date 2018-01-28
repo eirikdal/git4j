@@ -1,16 +1,14 @@
 package no.edh.index.entry;
 
-import no.edh.hashing.SHA1;
 import no.edh.index.entry.effects.exceptions.IndexEntryReadException;
 import no.edh.index.entry.effects.read.*;
 import no.edh.index.entry.effects.write.*;
 import no.edh.index.file.FileAttr;
-import no.edh.index.io.IndexIO;
+import no.edh.io.SideEffectWriter;
 import no.edh.objects.GitObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -68,8 +66,8 @@ public class IndexEntry {
         }
     }
 
-    public void write() throws IOException {
-        this.indexEntryLength = new IndexIO(this.index).apply(offset, Stream.of(
+    public void write() {
+        this.indexEntryLength = new SideEffectWriter(this.index).apply(offset, Stream.of(
                 new FileTimeWrite(this.creationTime, TimeUnit.SECONDS),// 4
                 new FileTimeWrite(this.creationTime, TimeUnit.NANOSECONDS), //8
                 new FileTimeWrite(this.modifiedTime, TimeUnit.SECONDS),//12
@@ -90,7 +88,7 @@ public class IndexEntry {
     public static IndexEntry read(Path index, Long offset) {
         IndexEntry indexEntry = new IndexEntry();
 
-        indexEntry.indexEntryLength = new IndexIO(index).apply(offset, Stream.of(
+        indexEntry.indexEntryLength = new SideEffectWriter(index).apply(offset, Stream.of(
                 new FileTimeRead(indexEntry::setCreationTime, TimeUnit.SECONDS),
                 new FileTimeRead(indexEntry::setModifiedTime, TimeUnit.SECONDS),
                 new FileAttrRead(indexEntry::setDevice),

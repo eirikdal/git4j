@@ -2,7 +2,7 @@ package no.edh.index.entry.effects.read;
 
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.index.entry.effects.write.FileTimeWrite;
-import no.edh.index.io.SideEffect;
+import no.edh.io.SideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,11 +11,10 @@ import java.io.RandomAccessFile;
 import java.nio.file.attribute.FileTime;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.IntBinaryOperator;
 
 import static no.edh.index.entry.effects.misc.BitWiseOperations.bytesToLong;
 
-public class FileTimeRead implements SideEffect {
+public class FileTimeRead implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTimeWrite.class);
 

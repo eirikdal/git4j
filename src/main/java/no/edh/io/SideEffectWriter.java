@@ -1,4 +1,4 @@
-package no.edh.index.io;
+package no.edh.io;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,12 +8,12 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class IndexIO {
+public class SideEffectWriter {
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexIO.class);
+    private static final Logger logger = LoggerFactory.getLogger(SideEffectWriter.class);
     private Path index;
 
-    public IndexIO(Path index) {
+    public SideEffectWriter(Path index) {
         this.index = index;
     }
 
@@ -25,11 +25,10 @@ public class IndexIO {
      *
      * @return length of bytes written
      */
-    public long apply(long offset, Stream<SideEffect> ops) {
+    public long apply(long offset, Stream<SideEffect<RandomAccessFile>> ops) {
         long length = -1L;
         try (RandomAccessFile fos = new RandomAccessFile(index.toFile(), "rwd")) {
             fos.seek(offset);
-
             length = ops.mapToLong(sideEffect -> sideEffect.apply(fos)).sum();
             fos.close();
         } catch (IOException e) {

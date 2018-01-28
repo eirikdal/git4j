@@ -1,13 +1,13 @@
 package no.edh.index.entry.effects.write;
 
 import no.edh.index.entry.effects.exceptions.SideEffectException;
-import no.edh.index.io.SideEffect;
+import no.edh.io.SideEffect;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
 
-public class ZeroPaddingWrite implements SideEffect {
+public class ZeroPaddingWrite implements SideEffect<RandomAccessFile> {
     private Path workingFilePath;
     private static final int minPathLength = 0xfff;
 

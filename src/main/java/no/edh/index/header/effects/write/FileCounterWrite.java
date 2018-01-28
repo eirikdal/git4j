@@ -1,7 +1,7 @@
 package no.edh.index.header.effects.write;
 
 import no.edh.index.entry.effects.exceptions.SideEffectException;
-import no.edh.index.io.SideEffect;
+import no.edh.io.SideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ import java.util.function.LongFunction;
 
 import static no.edh.index.entry.effects.misc.BitWiseOperations.longToBytes;
 
-public class FileCounterWrite implements SideEffect {
+public class FileCounterWrite implements SideEffect<RandomAccessFile> {
     private static final Logger logger = LoggerFactory.getLogger(FileCounterWrite.class);
 
     private static final int OFFSET = 8;

@@ -3,7 +3,7 @@ package no.edh.index.entry.effects.read;
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.index.entry.effects.write.FileAttrWrite;
 import no.edh.index.file.FileAttr;
-import no.edh.index.io.SideEffect;
+import no.edh.io.SideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.function.Consumer;
 
-public class FileAttrRead implements SideEffect {
+public class FileAttrRead implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileAttrWrite.class);
 

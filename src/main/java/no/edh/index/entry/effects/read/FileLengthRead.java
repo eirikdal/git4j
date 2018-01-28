@@ -2,13 +2,13 @@ package no.edh.index.entry.effects.read;
 
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.index.entry.effects.misc.BitWiseOperations;
-import no.edh.index.io.SideEffect;
+import no.edh.io.SideEffect;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.function.Consumer;
 
-public class FileLengthRead implements SideEffect {
+public class FileLengthRead implements SideEffect<RandomAccessFile> {
     private Consumer<Long> consumer;
 
     public FileLengthRead(Consumer<Long> consumer) {

@@ -23,6 +23,7 @@ public class IndexEntryTest {
         temporaryFolder.create();
         File testrepo = temporaryFolder.newFolder("testrepo");
         System.setProperty("user.dir", temporaryFolder.getRoot().getPath());
+        System.setProperty("repo.dir", testrepo.getPath());
         File testfile = temporaryFolder.newFile("testrepo/testfile");
         File index = temporaryFolder.newFile("testrepo/index");
 

@@ -1,49 +1,40 @@
 package no.edh.objects;
 
 import no.edh.hashing.SHA1;
-import org.apache.commons.io.IOUtils;
+import no.edh.io.SideEffectWriter;
+import no.edh.objects.effects.write.BlobWrite;
+import no.edh.objects.effects.write.ObjectHeadWriter;
+import no.edh.objects.effects.write.TreeWrite;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Tree implements GitObject {
     private List<GitObject> objectList;
 
     @Override
-    public Path objectPath() throws IOException {
+    public Path objectPath() {
         String hash = sha1().hash();
 
         return Paths.get(hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
     }
 
     @Override
-    public SHA1 sha1() throws IOException {
+    public SHA1 sha1() {
         return new SHA1(this);
     }
 
     @Override
     public File create() throws IOException {
-        File tmpFile = File.createTempFile("foo", "bar");
+        File tmpFile = File.createTempFile("tree", "file");
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for (GitObject object: objectList){
-            baos.write("100644 ".getBytes());
-            baos.write(object.getSourceFile().toFile().getName().getBytes());
-            baos.write(new byte[1]);
-            baos.write(object.sha1().hashBytes());
-        }
-
-        RandomAccessFile f = new RandomAccessFile(tmpFile, "rw");
-        f.seek(0); // to the beginning
-
-        f.write("tree ".getBytes());
-        f.write(String.format("%d", baos.toString().length()).getBytes());
-        f.write(new byte[1]);
-        f.write(baos.toByteArray());
-
-        f.close();
+        SideEffectWriter objectIO = new SideEffectWriter(tmpFile.toPath());
+        objectIO.apply(0, Stream.of(
+                new TreeWrite(this)
+        ));
 
         return tmpFile;
     }
@@ -53,7 +44,16 @@ public class Tree implements GitObject {
         return null;
     }
 
+    @Override
+    public ObjectType objectType() {
+        return ObjectType.Tree;
+    }
+
     public void addObjects(List<GitObject> objectList) {
         this.objectList = objectList;
+    }
+
+    public List<GitObject> getObjectList() {
+        return objectList;
     }
 }

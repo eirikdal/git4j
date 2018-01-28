@@ -1,12 +1,14 @@
 package no.edh.objects;
 
 import no.edh.hashing.SHA1;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
+import no.edh.io.SideEffectWriter;
+import no.edh.objects.effects.write.BlobWrite;
+import no.edh.objects.effects.write.ObjectHeadWriter;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 public class Blob implements GitObject {
 
@@ -17,7 +19,7 @@ public class Blob implements GitObject {
     }
 
     @Override
-    public Path objectPath() throws IOException {
+    public Path objectPath() {
         String hash = sha1().hash();
 
         return Paths.get(hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
@@ -28,26 +30,25 @@ public class Blob implements GitObject {
     }
 
     @Override
-    public SHA1 sha1() throws IOException {
+    public SHA1 sha1() {
         return new SHA1(this);
     }
 
     @Override
     public File create() throws IOException {
-        File tmpFile = File.createTempFile("foo", "bar");
+        File tmpFile = File.createTempFile("blob", "file");
 
-        RandomAccessFile f = new RandomAccessFile(tmpFile, "rw");
-        f.seek(0); // to the beginning
-        f.write("blob ".getBytes());
-        f.write(String.format("%d", this.getSourceFile().toFile().length()).getBytes());
-        f.write(new byte[]{0});
-        f.close();
-
-        try (FileInputStream input = new FileInputStream(this.getSourceFile().toFile());
-             FileOutputStream output1 = new FileOutputStream(tmpFile, true)) {
-            IOUtils.copy(input, output1);
-        }
+        SideEffectWriter objectIO = new SideEffectWriter(tmpFile.toPath());
+        objectIO.apply(0, Stream.of(
+                new ObjectHeadWriter(this),
+                new BlobWrite(this)
+        ));
 
         return tmpFile;
+    }
+
+    @Override
+    public ObjectType objectType() {
+        return ObjectType.Blob;
     }
 }
