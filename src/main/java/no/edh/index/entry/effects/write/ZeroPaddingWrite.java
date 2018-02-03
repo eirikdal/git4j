@@ -8,7 +8,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 
 public class ZeroPaddingWrite implements SideEffect<RandomAccessFile> {
-    private Path workingFilePath;
+    private final Path workingFilePath;
     private static final int minPathLength = 0xfff;
 
     public ZeroPaddingWrite(Path workingFilePath) {
@@ -32,10 +32,9 @@ public class ZeroPaddingWrite implements SideEffect<RandomAccessFile> {
         }
     }
 
-    private int getPadLen() throws IOException {
+    private int getPadLen() {
         final int actLen = 62 + workingFilePath.toFile().getName().length();
         final int expLen = (actLen + 8) & ~7;
-        final int padLen = expLen - actLen - 0; // TODO: we don't support extended file names yet..
-        return padLen;
+        return expLen - actLen;
     }
 }

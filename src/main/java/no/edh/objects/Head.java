@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 
 public class Head {
     private SHA1 head;
-    private Path repository;
+    private final Path repository;
 
     public Head(Path repository) {
         this.repository = repository;

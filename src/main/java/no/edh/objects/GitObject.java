@@ -2,7 +2,8 @@ package no.edh.objects;
 
 import no.edh.hashing.SHA1;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public abstract class GitObject {

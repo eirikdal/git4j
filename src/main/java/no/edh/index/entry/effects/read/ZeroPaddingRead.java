@@ -14,7 +14,7 @@ public class ZeroPaddingRead implements SideEffect<RandomAccessFile> {
 
     @Override
     public long apply(RandomAccessFile fos) {
-        long filePointer = -1, read = 0;
+        long filePointer, read = 0;
         try {
             filePointer = fos.getFilePointer();
             while (fos.readByte() == 0) {

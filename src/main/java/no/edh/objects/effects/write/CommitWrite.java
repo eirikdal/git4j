@@ -4,7 +4,9 @@ import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.io.SideEffect;
 import no.edh.objects.Commit;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.StringWriter;
 
 public class CommitWrite implements SideEffect<RandomAccessFile> {
 

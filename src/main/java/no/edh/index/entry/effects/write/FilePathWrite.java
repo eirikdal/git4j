@@ -15,7 +15,7 @@ public class FilePathWrite implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FilePathWrite.class);
 
-    private Path path;
+    private final Path path;
 
     public FilePathWrite(Path path) {
         this.path = path;

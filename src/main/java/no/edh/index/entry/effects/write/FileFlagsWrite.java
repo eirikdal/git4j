@@ -17,7 +17,7 @@ import static no.edh.index.entry.effects.misc.BitWiseOperations.intTo12BitByte;
  * 12-bit: path\file name length (if less than 0xFFF)
  */
 public class FileFlagsWrite implements SideEffect<RandomAccessFile> {
-    private Path workingFilePath;
+    private final Path workingFilePath;
 
     public FileFlagsWrite(Path workingFilePath) {
         this.workingFilePath = workingFilePath;

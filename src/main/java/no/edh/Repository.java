@@ -13,13 +13,13 @@ import java.nio.file.Paths;
 
 public class Repository {
 
-    private Logger logger = LoggerFactory.getLogger(Repository.class);
+    private final Logger logger = LoggerFactory.getLogger(Repository.class);
 
     private Path gitInternal;
     private Refs refs;
     private Objects objects;
     private Head head;
-    private Index index;
+    private final Index index;
 
     public Repository(String name) {
         System.setProperty("repo.dir", Paths.get(System.getProperty("user.dir"), name).toString());

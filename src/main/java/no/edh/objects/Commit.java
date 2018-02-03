@@ -1,16 +1,17 @@
 package no.edh.objects;
 
-import no.edh.zlib.ZlibInflater;
 import no.edh.hashing.SHA1;
 import no.edh.io.SideEffects;
 import no.edh.objects.commit.Author;
 import no.edh.objects.commit.Committer;
 import no.edh.objects.effects.read.CommitReader;
 import no.edh.objects.effects.write.CommitWrite;
+import no.edh.zlib.ZlibInflater;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 public class Commit extends GitObject {
@@ -42,7 +43,7 @@ public class Commit extends GitObject {
         File tmpFile = File.createTempFile("commit", "file");
 
         SideEffects objectIO = new SideEffects(tmpFile.toPath());
-        objectIO.apply(0, Stream.of(new CommitWrite(this)));
+        objectIO.apply(Stream.of(new CommitWrite(this)));
 
         return tmpFile;
     }

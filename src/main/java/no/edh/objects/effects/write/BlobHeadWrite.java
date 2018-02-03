@@ -6,12 +6,13 @@ import no.edh.objects.GitObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class BlobHeadWrite implements SideEffect<RandomAccessFile> {
     private static final Logger logger = LoggerFactory.getLogger(BlobHeadWrite.class);
 
-    private GitObject entry;
+    private final GitObject entry;
 
     public BlobHeadWrite(GitObject entry) {
         this.entry = entry;

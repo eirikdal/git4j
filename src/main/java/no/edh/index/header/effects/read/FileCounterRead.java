@@ -13,7 +13,7 @@ public class FileCounterRead implements SideEffect<RandomAccessFile> {
     private static final Logger logger = LoggerFactory.getLogger(FileCounterRead.class);
 
     private static final int OFFSET = 8;
-    private Consumer<Long> consumer;
+    private final Consumer<Long> consumer;
 
     public FileCounterRead(Consumer<Long> consumer) {
         this.consumer = consumer;

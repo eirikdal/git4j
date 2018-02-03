@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 public class IndexEntry {
 
-    private Logger logger = LoggerFactory.getLogger(IndexEntry.class);
+    private final Logger logger = LoggerFactory.getLogger(IndexEntry.class);
 
     private Path index;
     private Long offset;

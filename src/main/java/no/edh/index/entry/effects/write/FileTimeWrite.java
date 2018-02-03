@@ -16,8 +16,8 @@ public class FileTimeWrite implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTimeWrite.class);
 
-    private FileTime time;
-    private TimeUnit timeType;
+    private final FileTime time;
+    private final TimeUnit timeType;
 
     public FileTimeWrite(FileTime time, TimeUnit timeType) {
         this.time = time;

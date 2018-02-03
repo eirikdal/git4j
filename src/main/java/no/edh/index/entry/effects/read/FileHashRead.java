@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 public class FileHashRead implements SideEffect<RandomAccessFile> {
     private static final Logger logger = LoggerFactory.getLogger(FileAttrWrite.class);
 
-    private Consumer<SHA1> consumer;
+    private final Consumer<SHA1> consumer;
 
     public FileHashRead(Consumer<SHA1> consumer) {
         this.consumer = consumer;

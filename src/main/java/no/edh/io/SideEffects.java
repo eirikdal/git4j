@@ -11,10 +11,23 @@ import java.util.stream.Stream;
 public class SideEffects {
 
     private static final Logger logger = LoggerFactory.getLogger(SideEffects.class);
-    private Path path;
+    public static final int OFFSET_ZERO = 0;
+    private final Path path;
 
     public SideEffects(Path path) {
         this.path = path;
+    }
+
+
+    /**
+     * Open file and apply writeoperations to it
+     *
+     * @param sideEffects write operation to apply to index file
+     *
+     * @return length of bytes written
+     */
+    public long apply(Stream<SideEffect<RandomAccessFile>> sideEffects) {
+        return apply(OFFSET_ZERO, sideEffects);
     }
 
     /**
@@ -35,5 +48,4 @@ public class SideEffects {
         }
         return length;
     }
-
 }

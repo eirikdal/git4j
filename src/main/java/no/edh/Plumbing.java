@@ -5,12 +5,10 @@ import no.edh.index.Index;
 import no.edh.index.entry.IndexEntry;
 import no.edh.index.ops.CacheInfo;
 import no.edh.index.ops.UpdateIndex;
-import no.edh.objects.Blob;
 import no.edh.objects.GitObject;
 import no.edh.objects.Objects;
 import no.edh.objects.Tree;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 

@@ -15,7 +15,7 @@ public class FileCounterWrite implements SideEffect<RandomAccessFile> {
     private static final Logger logger = LoggerFactory.getLogger(FileCounterWrite.class);
 
     private static final int OFFSET = 8;
-    private LongFunction<Long> longFunction;
+    private final LongFunction<Long> longFunction;
 
     /**
      * Integer operator to apply to counter

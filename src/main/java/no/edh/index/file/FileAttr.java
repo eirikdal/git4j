@@ -1,7 +1,7 @@
 package no.edh.index.file;
 
 public class FileAttr {
-    private byte[] bytes;
+    private final byte[] bytes;
 
     /**
      * TODO: Figure out how to get the attributes we want.. for now, hardcode this

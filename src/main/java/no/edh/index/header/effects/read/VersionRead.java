@@ -15,7 +15,7 @@ public class VersionRead implements SideEffect<RandomAccessFile> {
 
     private static final int OFFSET = 4;
 
-    private Consumer<Long> consumer;
+    private final Consumer<Long> consumer;
 
     public VersionRead(Consumer<Long> consumer) {
         this.consumer = consumer;

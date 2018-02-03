@@ -13,7 +13,7 @@ public class FileAttrWrite implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileAttrWrite.class);
 
-    private FileAttr attr;
+    private final FileAttr attr;
 
     public FileAttrWrite(FileAttr attr) {
         this.attr = attr;

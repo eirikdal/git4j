@@ -3,10 +3,11 @@ package no.edh.objects.effects.write;
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.index.ops.CacheInfo;
 import no.edh.io.SideEffect;
-import no.edh.objects.GitObject;
 import no.edh.objects.Tree;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;

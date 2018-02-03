@@ -14,7 +14,7 @@ import static no.edh.index.entry.effects.misc.BitWiseOperations.longToBytes;
 public class FileLengthWrite implements SideEffect<RandomAccessFile> {
     private static final Logger logger = LoggerFactory.getLogger(FileLengthWrite.class);
 
-    private Path entry;
+    private final Path entry;
 
     public FileLengthWrite(Path entry) {
         this.entry = entry;

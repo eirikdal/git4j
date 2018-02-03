@@ -2,8 +2,8 @@ package no.edh.objects.commit;
 
 public class Identity {
 
-    private String email;
-    private String name;
+    private final String email;
+    private final String name;
 
     public Identity(String email, String name) {
         this.email = email;

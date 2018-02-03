@@ -7,12 +7,10 @@ import no.edh.index.file.FileAttr;
 import no.edh.index.header.IndexHeader;
 import no.edh.index.ops.CacheInfo;
 import no.edh.io.SideEffects;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.file.Files;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +22,9 @@ public class Index {
 
     public static final long OFFSET_FIRST_INDEX_ENTRY = 12L;
 
-    private Path index;
-    private List<IndexEntry> entries = new ArrayList<IndexEntry>();
-    private IndexHeader header;
+    private final Path index;
+    private List<IndexEntry> entries = new ArrayList<>();
+    private final IndexHeader header;
     private long totalLength = 0;
 
     public Index(Path index) {
@@ -76,7 +74,7 @@ public class Index {
      *
      * @throws IOException
      */
-    public void updateIndex() throws IOException {
+    public void updateIndex() {
         this.header.write(this.entries.size());
         FileAttr attr = new FileAttr(SHA1.hashBytes(this.index)); // sha1 of index
         this.totalLength += new SideEffects(this.index).apply(this.totalLength, Stream.of(new FileAttrWrite(attr)));

@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 
 public class Refs {
     private Path refs;
-    private Head head;
+    private final Head head;
 
     public Refs(Path refs) {
         this.refs = refs;

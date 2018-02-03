@@ -17,7 +17,7 @@ public class CommitReader implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(CommitReader.class);
 
-    private Consumer<Commit> consumer;
+    private final Consumer<Commit> consumer;
 
     public CommitReader(Consumer<Commit> consumer) {
         this.consumer = consumer;
@@ -31,7 +31,7 @@ public class CommitReader implements SideEffect<RandomAccessFile> {
             String test = file.readLine();
             String tree = test.substring(test.indexOf("tree ")+5, test.length());
             commit.setTree(new SHA1(tree));
-            String parent = file.readLine();;
+            String parent = file.readLine();
 
             parent = parent.substring(parent.indexOf("parent ") + 7, parent.length());
             commit.setParent(parent);

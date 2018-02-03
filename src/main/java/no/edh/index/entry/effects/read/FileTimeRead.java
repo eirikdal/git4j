@@ -18,8 +18,8 @@ public class FileTimeRead implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileTimeWrite.class);
 
-    private Consumer<FileTime> time;
-    private TimeUnit timeUnit;
+    private final Consumer<FileTime> time;
+    private final TimeUnit timeUnit;
 
     public FileTimeRead(Consumer<FileTime> time, TimeUnit timeUnit) {
         this.time = time;

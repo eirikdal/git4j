@@ -9,7 +9,7 @@ import java.io.RandomAccessFile;
 import java.util.function.Consumer;
 
 public class FileLengthRead implements SideEffect<RandomAccessFile> {
-    private Consumer<Long> consumer;
+    private final Consumer<Long> consumer;
 
     public FileLengthRead(Consumer<Long> consumer) {
         this.consumer = consumer;

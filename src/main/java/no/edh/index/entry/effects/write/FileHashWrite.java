@@ -13,7 +13,7 @@ public class FileHashWrite implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileHashWrite.class);
 
-    private SHA1 attr;
+    private final SHA1 attr;
 
     public FileHashWrite(SHA1 attr) {
         this.attr = attr;

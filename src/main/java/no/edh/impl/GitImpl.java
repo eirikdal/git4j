@@ -4,20 +4,21 @@ import no.edh.Git;
 import no.edh.Plumbing;
 import no.edh.Repository;
 import no.edh.hashing.SHA1;
+import no.edh.index.entry.IndexEntry;
 import no.edh.index.ops.CacheInfo;
 import no.edh.index.ops.FileMode;
 import no.edh.index.ops.UpdateIndex;
-import no.edh.index.entry.IndexEntry;
-import no.edh.objects.*;
+import no.edh.objects.Blob;
+import no.edh.objects.Commit;
+import no.edh.objects.Objects;
+import no.edh.objects.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
-import static java.util.Comparator.comparing;
 
 public class GitImpl implements Git {
 

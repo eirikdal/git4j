@@ -1,16 +1,17 @@
 package no.edh.objects;
 
 import no.edh.io.SideEffects;
-import no.edh.objects.effects.write.BlobWrite;
 import no.edh.objects.effects.write.BlobHeadWrite;
+import no.edh.objects.effects.write.BlobWrite;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public class Blob extends GitObject {
 
-    private Path sourceFile;
+    private final Path sourceFile;
 
     public Blob(Path sourceFile) {
         this.sourceFile = sourceFile;
@@ -25,7 +26,7 @@ public class Blob extends GitObject {
         File tmpFile = File.createTempFile("blob", "file");
 
         SideEffects objectIO = new SideEffects(tmpFile.toPath());
-        objectIO.apply(0, Stream.of(
+        objectIO.apply(Stream.of(
                 new BlobHeadWrite(this),
                 new BlobWrite(this)
         ));

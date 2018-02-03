@@ -1,11 +1,12 @@
 package no.edh.objects;
 
-import no.edh.zlib.ZlibDeflater;
 import no.edh.index.entry.IndexEntry;
 import no.edh.index.ops.CacheInfo;
 import no.edh.index.ops.FileMode;
+import no.edh.zlib.ZlibDeflater;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -15,7 +16,7 @@ import static java.util.Comparator.comparing;
 
 public class Objects {
 
-    private Path objects;
+    private final Path objects;
 
     public Objects(Path objects) {
         this.objects = objects;
@@ -32,7 +33,7 @@ public class Objects {
         return Paths.get(hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
     }
 
-    public static Path absolutize(String hash) throws IOException {
+    public static Path absolutize(String hash) {
         Path repo = Paths.get(System.getProperty("repo.dir"), ".git", "objects");
 
         return repo.resolve(find(hash));
@@ -52,7 +53,7 @@ public class Objects {
         new ZlibDeflater().compress(objectsTmpFile, out);
     }
 
-    private Path createOrGet(GitObject gitObject) throws IOException {
+    private Path createOrGet(GitObject gitObject) {
         Path other = gitObject.objectPath();
         Path object = objects.resolve(other);
         if (!object.getParent().toFile().exists()) {

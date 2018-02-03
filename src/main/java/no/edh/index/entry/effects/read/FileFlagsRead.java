@@ -14,7 +14,7 @@ public class FileFlagsRead implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileAttrRead.class);
 
-    private Consumer<FileAttr> consumer;
+    private final Consumer<FileAttr> consumer;
 
     public FileFlagsRead(Consumer<FileAttr> consumer) {
         this.consumer = consumer;

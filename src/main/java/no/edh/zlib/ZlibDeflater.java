@@ -2,10 +2,11 @@ package no.edh.zlib;
 
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
-import java.util.zip.DataFormatException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterInputStream;
 
 public class ZlibDeflater {
 

@@ -18,7 +18,7 @@ public class IndexHeader {
 
     private static final Logger logger = LoggerFactory.getLogger(IndexHeader.class);
 
-    private Path index;
+    private final Path index;
     private long length;
 
     private Long count = 0L;
@@ -34,8 +34,8 @@ public class IndexHeader {
      *
      * @throws IOException
      */
-    public void init() throws IOException {
-        this.length = new SideEffects(this.index).apply(0, Stream.of(
+    public void init() {
+        this.length = new SideEffects(this.index).apply(Stream.of(
                 new HeaderWrite(this.header),
                 new VersionWrite(this.version),
                 new FileCounterWrite((current) -> this.count)
@@ -43,7 +43,7 @@ public class IndexHeader {
     }
 
     public void write(long count) {
-        this.length = new SideEffects(this.index).apply(0, Stream.of(
+        this.length = new SideEffects(this.index).apply(Stream.of(
                 new HeaderWrite(this.header),
                 new VersionWrite(this.version),
                 new FileCounterWrite(current -> count) // initialize with 0
@@ -53,7 +53,7 @@ public class IndexHeader {
     public static IndexHeader read(Path index) {
         IndexHeader indexEntry = new IndexHeader(index);
 
-        indexEntry.length = new SideEffects(index).apply(0, Stream.of(
+        indexEntry.length = new SideEffects(index).apply(Stream.of(
                 new HeaderRead(indexEntry::setHeader),
                 new VersionRead(indexEntry::setVersion),
                 new FileCounterRead(indexEntry::setCount)

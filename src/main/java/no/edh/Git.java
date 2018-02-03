@@ -1,6 +1,5 @@
 package no.edh;
 
-import com.jcraft.jsch.IO;
 import no.edh.hashing.SHA1;
 import no.edh.index.entry.IndexEntry;
 

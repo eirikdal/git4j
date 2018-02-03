@@ -1,29 +1,23 @@
 package no.edh.impl;
 
-import no.edh.Repository;
 import no.edh.hashing.SHA1;
-import no.edh.index.Index;
-import no.edh.objects.*;
-import org.apache.commons.io.IOUtils;
+import no.edh.objects.Commit;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-import static org.junit.jupiter.api.Assumptions.assumingThat;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GitImplTest {
 
     @Rule
+    final
     TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     static {

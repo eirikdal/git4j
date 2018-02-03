@@ -14,7 +14,7 @@ public class HeaderRead implements SideEffect<RandomAccessFile> {
 
     private static final int OFFSET = 0;
 
-    private Consumer<String> consumer;
+    private final Consumer<String> consumer;
 
     public HeaderRead(Consumer<String> consumer) {
         this.consumer = consumer;

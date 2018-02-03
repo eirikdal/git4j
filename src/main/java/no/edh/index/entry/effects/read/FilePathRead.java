@@ -2,11 +2,7 @@ package no.edh.index.entry.effects.read;
 
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.index.entry.effects.write.FilePathWrite;
-import no.edh.index.ops.CacheInfo;
-import no.edh.index.ops.FileMode;
 import no.edh.io.SideEffect;
-import no.edh.objects.Blob;
-import no.edh.objects.GitObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +17,7 @@ public class FilePathRead implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FilePathWrite.class);
 
-    private Consumer<Path> consumer;
+    private final Consumer<Path> consumer;
 
     public FilePathRead(Consumer<Path> consumer) {
         this.consumer = consumer;
