@@ -1,5 +1,6 @@
 package no.edh.index.entry.effects.write;
 
+import no.edh.hashing.SHA1;
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.io.SideEffect;
 import org.slf4j.Logger;
@@ -12,17 +13,18 @@ public class FileHashWrite implements SideEffect<RandomAccessFile> {
 
     private static final Logger logger = LoggerFactory.getLogger(FileHashWrite.class);
 
-    private byte[] attr;
+    private SHA1 attr;
 
-    public FileHashWrite(byte[] attr) {
+    public FileHashWrite(SHA1 attr) {
         this.attr = attr;
     }
 
     @Override
     public long apply(RandomAccessFile file) {
         try {
-            file.write(attr);
-            return attr.length;
+            byte[] hashBytes = attr.getHashBytes();
+            file.write(hashBytes);
+            return hashBytes.length;
         } catch (IOException e) {
             logger.error("Error writing file attributes", e);
             throw new SideEffectException("Error writing to index file", e);

@@ -1,9 +1,8 @@
 package no.edh.objects;
 
 import no.edh.hashing.SHA1;
+import no.edh.index.ops.CacheInfo;
 import no.edh.io.SideEffectWriter;
-import no.edh.objects.effects.write.BlobWrite;
-import no.edh.objects.effects.write.ObjectHeadWriter;
 import no.edh.objects.effects.write.TreeWrite;
 
 import java.io.*;
@@ -13,11 +12,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class Tree implements GitObject {
-    private List<GitObject> objectList;
+    private List<CacheInfo> objectList;
 
     @Override
     public Path objectPath() {
-        String hash = sha1().hash();
+        String hash = sha1().getHashHex();
 
         return Paths.get(hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
     }
@@ -28,7 +27,7 @@ public class Tree implements GitObject {
     }
 
     @Override
-    public File create() throws IOException {
+    public File write() throws IOException {
         File tmpFile = File.createTempFile("tree", "file");
 
         SideEffectWriter objectIO = new SideEffectWriter(tmpFile.toPath());
@@ -40,7 +39,7 @@ public class Tree implements GitObject {
     }
 
     @Override
-    public Path getSourceFile() {
+    public Path realPath() {
         return null;
     }
 
@@ -49,11 +48,11 @@ public class Tree implements GitObject {
         return ObjectType.Tree;
     }
 
-    public void addObjects(List<GitObject> objectList) {
+    public void addObjects(List<CacheInfo> objectList) {
         this.objectList = objectList;
     }
 
-    public List<GitObject> getObjectList() {
+    public List<CacheInfo> getObjectList() {
         return objectList;
     }
 }

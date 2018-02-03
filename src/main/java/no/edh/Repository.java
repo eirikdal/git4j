@@ -22,6 +22,7 @@ public class Repository {
     private Index index;
 
     public Repository(String name) {
+        System.setProperty("repo.dir", Paths.get(System.getProperty("user.dir"), name).toString());
         String userDir = System.getProperty("repo.dir");
 
         this.gitInternal = Paths.get(userDir, ".git");

@@ -11,10 +11,10 @@ import java.util.stream.Stream;
 public class SideEffectWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(SideEffectWriter.class);
-    private Path index;
+    private Path path;
 
-    public SideEffectWriter(Path index) {
-        this.index = index;
+    public SideEffectWriter(Path path) {
+        this.path = path;
     }
 
     /**
@@ -27,12 +27,12 @@ public class SideEffectWriter {
      */
     public long apply(long offset, Stream<SideEffect<RandomAccessFile>> ops) {
         long length = -1L;
-        try (RandomAccessFile fos = new RandomAccessFile(index.toFile(), "rwd")) {
+        try (RandomAccessFile fos = new RandomAccessFile(path.toFile(), "rwd")) {
             fos.seek(offset);
             length = ops.mapToLong(sideEffect -> sideEffect.apply(fos)).sum();
             fos.close();
         } catch (IOException e) {
-            logger.warn("Could not write to index file", e);
+            logger.warn("Could not perform sid", e);
         }
         return length;
     }

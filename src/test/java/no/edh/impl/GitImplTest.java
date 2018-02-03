@@ -2,24 +2,29 @@ package no.edh.impl;
 
 import no.edh.Repository;
 import no.edh.hashing.SHA1;
-import no.edh.objects.Blob;
-import no.edh.objects.GitObject;
+import no.edh.index.Index;
+import no.edh.objects.*;
+import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.rules.TemporaryFolder;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.Assumptions.assumingThat;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.List;
 
 public class GitImplTest {
 
-    private static final String userDir = System.getProperty("user.dir");
+    @Rule
+    TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     static {
         try {
@@ -31,54 +36,56 @@ public class GitImplTest {
     }
 
     @Test
-    void skal_kunne_lage_nytt_repo() throws IOException {
-        assertTrue(Paths.get(userDir, "testrepo", ".git").toFile().exists());
-    }
+    void should_add_file_to_index() throws IOException {
+        temporaryFolder.create();
+        File testFolder = temporaryFolder.newFolder("shouldAddFilesToIndex");
 
-    @Test
-    void skal_kunne_legge_til_nye_filer() throws IOException {
-        Paths.get(userDir, "testrepo", ".git", "index").toFile().delete();
-        Paths.get(userDir, "testrepo", "testfile").toFile().delete();
-        Paths.get(userDir, "testrepo").toFile().mkdirs();
-        Path file = Files.write(Paths.get(userDir, "testrepo", "testfile"), "test".getBytes());
-        Path file2 = Files.write(Paths.get(userDir, "testrepo", "uuperduperfile"), "testtest".getBytes());
-        Path file3 = Files.write(Paths.get(userDir, "testrepo", "yummibear"), "So so so so ..".getBytes());
-        Path file4 = Files.write(Paths.get(userDir, "testrepo", "zoramora"), "ASDFSo so so so ..".getBytes());
+        System.setProperty("repo.dir", testFolder.getPath());
 
-        GitImpl git = new GitImpl("testrepo");
+        Path file = Files.write(Paths.get(testFolder.getPath(), "testfile"), "test".getBytes());
+
+        GitImpl git = new GitImpl(testFolder.toPath());
         git.init();
         git.add(file);
-        git.add(file2);
-        git.add(file3);
-        git.add(file4);
 
-        Repository repository = new Repository();
-        Blob blob = new Blob(file);
-        SHA1 sha1 = new SHA1(blob);
-        GitObject gitObject = repository.getObjects().find(sha1);
-
-        assertTrue(Paths.get(userDir, "testrepo", ".git", "index").toFile().exists());
+        assertEquals(testFolder.toPath().relativize(file), git.status().get(0).getPath());
     }
 
     @Test
     public void should_make_commit() throws IOException {
-        Paths.get(userDir, "testrepo2", ".git", "index").toFile().delete();
-        Paths.get(userDir, "testrepo2", "testfile").toFile().delete();
-        Paths.get(userDir, "testrepo2").toFile().mkdirs();
-        Path file = Files.write(Paths.get(userDir, "testrepo2", "testfile"), "test".getBytes());
-        Path file2 = Files.write(Paths.get(userDir, "testrepo2", "suuperduperfile"), "testtest".getBytes());
+        temporaryFolder.create();
+        File testFolder = temporaryFolder.newFolder("shouldMakeCommits");
 
-        GitImpl git = new GitImpl("testrepo2");
+        System.setProperty("repo.dir", testFolder.getPath());
+
+        Path file = Files.write(Paths.get(testFolder.getPath(), "testfile"), "test".getBytes());
+        Path file2 = Files.write(Paths.get(testFolder.getPath(), "uuperduperfile"), "testtest".getBytes());
+
+        GitImpl git = new GitImpl(testFolder.toPath());
         git.init();
         git.add(file);
         git.add(file2);
 
-        git.commit("foobar");
+        SHA1 commit1sha = git.commit("foobar");
 
-        Path file3 = Files.write(Paths.get(userDir, "testrepo2", "yummibear"), "testtest".getBytes());
+        Path file3 = Files.write(Paths.get(testFolder.getPath(), "yummibear"), "testtesttest".getBytes());
         git.add(file3);
-        git.commit("Second commit");
 
-        assertTrue(Paths.get(userDir, "testrepo2", ".git", "index").toFile().exists());
+        SHA1 commit2sha = git.commit("Second commit");
+
+        String hash = commit2sha.getHashHex();
+        Path path = Paths.get(testFolder.getPath(),".git", "objects", hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
+
+        Commit commit2obj = Commit.read(path);
+
+        assertEquals("8751501936ee23adfd7fa7e9bc20c34d1ad56ff4", commit2obj.getTree().getHashHex());
+        assertEquals(commit1sha.getHashHex(), commit2obj.getParent());
+        assertEquals("Random Guy", commit2obj.getAuthor().getName());
+        assertEquals("foo@bar.edu", commit2obj.getAuthor().getEmail());
+        assertEquals("GitHub", commit2obj.getCommitter().getName());
+        assertEquals("noreply@github.com", commit2obj.getCommitter().getEmail());
+        assertEquals("Second commit", commit2obj.getCommitMsg());
     }
+
+
 }

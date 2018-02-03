@@ -34,7 +34,7 @@ public class Head {
             master.getParent().toFile().mkdirs();
             master.toFile().createNewFile();
         }
-        Files.write(master, sha1.hash().getBytes());
+        Files.write(master, sha1.getHashHex().getBytes());
     }
 
     public static Head init(Path repository) throws IOException {

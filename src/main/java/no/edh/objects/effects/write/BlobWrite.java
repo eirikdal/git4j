@@ -3,7 +3,6 @@ package no.edh.objects.effects.write;
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.io.SideEffect;
 import no.edh.objects.Blob;
-import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -18,10 +17,10 @@ public class BlobWrite implements SideEffect<RandomAccessFile> {
 
     @Override
     public long apply(RandomAccessFile blobOutputFile) {
-        File blobFile = blob.getSourceFile().toFile();
+        File blobFile = blob.realPath().toFile();
         try {
             FileOutputStream out = new FileOutputStream(blobOutputFile.getFD());
-            Files.copy(blob.getSourceFile(), out);
+            Files.copy(blob.realPath(), out);
             out.flush();
             return blobFile.length();
         } catch (IOException e) {

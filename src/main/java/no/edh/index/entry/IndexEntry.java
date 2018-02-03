@@ -1,11 +1,12 @@
 package no.edh.index.entry;
 
+import no.edh.hashing.SHA1;
 import no.edh.index.entry.effects.exceptions.IndexEntryReadException;
 import no.edh.index.entry.effects.read.*;
 import no.edh.index.entry.effects.write.*;
 import no.edh.index.file.FileAttr;
+import no.edh.index.ops.CacheInfo;
 import no.edh.io.SideEffectWriter;
-import no.edh.objects.GitObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,26 +32,26 @@ public class IndexEntry {
     private FileAttr mode;
     private FileAttr userId;
     private FileAttr groupId;
-    private byte[] sha1;
+    private SHA1 sha1;
     private FileAttr flags;
     private Long fileLength;
-    private GitObject object;
+    private Path path;
 
-    public IndexEntry(Path index, GitObject entry, long offset) {
+    public IndexEntry(Path index, CacheInfo cacheInfo, long offset) {
         this.index = index;
-        this.object = entry;
+        this.path = cacheInfo.getPath();
         this.offset = offset;
 
-        read(entry);
+        read(cacheInfo);
     }
 
     private IndexEntry() {
 
     }
 
-    private void read(GitObject entry) {
+    private void read(CacheInfo entry) {
         try {
-            BasicFileAttributes attr = Files.readAttributes(entry.getSourceFile(), BasicFileAttributes.class);
+            BasicFileAttributes attr = Files.readAttributes(entry.getPath(), BasicFileAttributes.class);
             this.creationTime = attr.creationTime();
             this.modifiedTime = attr.lastModifiedTime();
             this.device = new FileAttr(new byte[4]);
@@ -59,14 +60,14 @@ public class IndexEntry {
             this.userId = new FileAttr(new byte[4]);
             this.groupId = new FileAttr(new byte[4]);
             this.flags = new FileAttr(new byte[2]);
-            this.sha1 = entry.sha1().hashBytes();
+            this.sha1 = entry.getHash();
         } catch (IOException e) {
             logger.error("Error reading index entry", e);
             throw new IndexEntryReadException("Error reading index entry", e);
         }
     }
 
-    public void write() {
+    public void write(CacheInfo cacheInfo) {
         this.indexEntryLength = new SideEffectWriter(this.index).apply(offset, Stream.of(
                 new FileTimeWrite(this.creationTime, TimeUnit.SECONDS),// 4
                 new FileTimeWrite(this.creationTime, TimeUnit.NANOSECONDS), //8
@@ -77,11 +78,11 @@ public class IndexEntry {
                 new FileAttrWrite(this.mode), // mode 28
                 new FileAttrWrite(this.userId), //userId 32
                 new FileAttrWrite(this.groupId), //groupId 36
-                new FileLengthWrite(this.object.getSourceFile()), //fileLength 40
+                new FileLengthWrite(cacheInfo.getPath()), //fileLength 40
                 new FileHashWrite(this.sha1), //sha1 60
-                new FileFlagsWrite(this.object.getSourceFile()), //flags 62
-                new FilePathWrite(this.object.getSourceFile()), //object 70
-                new ZeroPaddingWrite(this.object.getSourceFile()) //zero-padding 71
+                new FileFlagsWrite(cacheInfo.getPath()), //flags 62
+                new FilePathWrite(cacheInfo.getPath()), //object 70
+                new ZeroPaddingWrite(cacheInfo.getPath()) //zero-padding 71
         ));
     }
 
@@ -99,15 +100,19 @@ public class IndexEntry {
                 new FileLengthRead(indexEntry::setFileLength),
                 new FileHashRead(indexEntry::setSha1),
                 new FileFlagsRead(indexEntry::setFlags),
-                new FilePathRead(indexEntry::setObject),
+                new FilePathRead(indexEntry::setPath),
                 new ZeroPaddingRead()
         ));
 
         return indexEntry;
     }
 
-    public GitObject getObject() {
-        return object;
+    public Path getPath() {
+        return path;
+    }
+
+    public void setPath(Path path) {
+        this.path = path;
     }
 
     public long getIndexEntryLength() {
@@ -142,7 +147,7 @@ public class IndexEntry {
         this.groupId = groupId;
     }
 
-    public void setSha1(byte[] sha1) {
+    public void setSha1(SHA1 sha1) {
         this.sha1 = sha1;
     }
 
@@ -152,10 +157,6 @@ public class IndexEntry {
 
     public void setIndexEntryLength(Long indexEntryLength) {
         this.indexEntryLength = indexEntryLength;
-    }
-
-    public void setObject(GitObject object) {
-        this.object = object;
     }
 
     public void setFileLength(Long fileLength) {

@@ -4,6 +4,7 @@ import no.edh.index.entry.IndexEntry;
 import no.edh.index.entry.effects.write.FileAttrWrite;
 import no.edh.index.file.FileAttr;
 import no.edh.index.header.IndexHeader;
+import no.edh.index.ops.CacheInfo;
 import no.edh.io.SideEffectWriter;
 import no.edh.objects.GitObject;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -49,16 +50,16 @@ public class Index {
      * @param file
      * @throws IOException
      */
-    public void addBlobToIndex(GitObject file) {
+    public void addBlobToIndex(CacheInfo file) {
         writeIndexEntry(file);
         updateLength();
     }
 
-    private void writeIndexEntry(GitObject path) {
+    private void writeIndexEntry(CacheInfo path) {
         Long lengthOfEntries = entries.stream().mapToLong(IndexEntry::getIndexEntryLength).sum();
         long offset = header.getLength() + lengthOfEntries;
         IndexEntry entry = new IndexEntry(index, path, offset);
-        entry.write();
+        entry.write(path);
         this.entries.add(entry);
     }
 

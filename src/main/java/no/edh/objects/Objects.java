@@ -3,14 +3,16 @@ package no.edh.objects;
 import no.edh.archive.zlib.ZlibDeflater;
 import no.edh.hashing.SHA1;
 import no.edh.index.entry.IndexEntry;
+import no.edh.index.ops.CacheInfo;
+import no.edh.index.ops.FileMode;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static java.util.Comparator.comparing;
 
 public class Objects {
 
@@ -27,22 +29,21 @@ public class Objects {
         return objects;
     }
 
-    public GitObject find(SHA1 sha1) throws IOException {
-        String hash = sha1.hash();
-        Path object = objects.resolve(hash.substring(0,2)).resolve(hash.substring(2, hash.length()));
+    public static Path find(String hash) throws IOException {
+        Path repo = Paths.get(System.getProperty("repo.dir"), ".git", "objects");
 
-        return new Blob(object);
+        return repo.resolve(hash.substring(0,2)).resolve(hash.substring(2, hash.length()));
     }
 
-    public static List<GitObject> map(List<IndexEntry> entries) {
+    public static List<CacheInfo> map(List<IndexEntry> entries) {
         return entries.stream()
-                .map(indexEntry -> Paths.get(System.getProperty("repo.dir"), indexEntry.getObject().getSourceFile().toString()))
-                .map(Blob::new)
+                .map(indexEntry -> Paths.get(System.getProperty("repo.dir"), indexEntry.getPath().toString()))
+                .map((Path path) -> new CacheInfo(FileMode.Blob, new Blob(path).sha1(), path))
                 .collect(Collectors.toList());
     }
 
-    public void addObject(GitObject gitObject) throws IOException {
-        File objectsTmpFile = gitObject.create();
+    public void writeObject(GitObject gitObject) throws IOException {
+        File objectsTmpFile = gitObject.write();
         File out = createOrGet(gitObject).toFile();
 
         new ZlibDeflater().compress(objectsTmpFile, out);
@@ -55,5 +56,9 @@ public class Objects {
             object.getParent().toFile().mkdirs();
         }
         return object;
+    }
+
+    public static void sort(List<CacheInfo> objects) {
+        objects.sort(comparing(o -> o.getPath().toFile().getName()));
     }
 }

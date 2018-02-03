@@ -1,9 +1,11 @@
 package no.edh.objects;
 
+import no.edh.archive.zlib.ZlibInflater;
 import no.edh.hashing.SHA1;
 import no.edh.io.SideEffectWriter;
+import no.edh.objects.effects.read.CommitTreeReader;
 import no.edh.objects.effects.write.BlobWrite;
-import no.edh.objects.effects.write.ObjectHeadWriter;
+import no.edh.objects.effects.write.BlobHeadWrite;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -20,12 +22,12 @@ public class Blob implements GitObject {
 
     @Override
     public Path objectPath() {
-        String hash = sha1().hash();
+        String hash = sha1().getHashHex();
 
         return Paths.get(hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
     }
 
-    public Path getSourceFile() {
+    public Path realPath() {
         return sourceFile;
     }
 
@@ -35,12 +37,12 @@ public class Blob implements GitObject {
     }
 
     @Override
-    public File create() throws IOException {
+    public File write() throws IOException {
         File tmpFile = File.createTempFile("blob", "file");
 
         SideEffectWriter objectIO = new SideEffectWriter(tmpFile.toPath());
         objectIO.apply(0, Stream.of(
-                new ObjectHeadWriter(this),
+                new BlobHeadWrite(this),
                 new BlobWrite(this)
         ));
 

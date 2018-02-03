@@ -19,14 +19,14 @@ public class CommitWrite implements SideEffect<RandomAccessFile> {
         try {
             StringWriter baos = new StringWriter();
             baos.write("tree ");
-            baos.write(commit.getTree().sha1().hash());
+            baos.write(commit.getTree().getHashHex());
             baos.write("\n");
             if (commit.getParent() != null) {
                 baos.write("parent ");
                 baos.write(commit.getParent());
                 baos.write("\n");
             }
-            baos.write("author Eirik Daleng Haukedal <eirik.haukedal@gmail.com> ");
+            baos.write("author Random Guy <foo@bar.edu> ");
             baos.write(String.format("%d", commit.getTime()));
             baos.write(" +0200\n");
             baos.write("committer GitHub <noreply@github.com> ");

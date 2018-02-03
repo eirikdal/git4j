@@ -1,5 +1,6 @@
 package no.edh.index.entry.effects.read;
 
+import no.edh.hashing.SHA1;
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.index.entry.effects.write.FileAttrWrite;
 import no.edh.io.SideEffect;
@@ -13,9 +14,9 @@ import java.util.function.Consumer;
 public class FileHashRead implements SideEffect<RandomAccessFile> {
     private static final Logger logger = LoggerFactory.getLogger(FileAttrWrite.class);
 
-    private Consumer<byte[]> consumer;
+    private Consumer<SHA1> consumer;
 
-    public FileHashRead(Consumer<byte[]> consumer) {
+    public FileHashRead(Consumer<SHA1> consumer) {
         this.consumer = consumer;
     }
 
@@ -24,7 +25,7 @@ public class FileHashRead implements SideEffect<RandomAccessFile> {
         try {
             byte[] sha1 = new byte[20];
             file.read(sha1, 0, 20);
-            this.consumer.accept(sha1);
+            this.consumer.accept(new SHA1(sha1));
             return sha1.length;
         } catch (IOException e) {
             logger.error("Error writing file attributes", e);

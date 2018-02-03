@@ -7,8 +7,8 @@ import java.nio.file.Path;
 
 public interface GitObject {
     Path objectPath();
+    Path realPath();
     SHA1 sha1();
-    File create() throws IOException;
-    Path getSourceFile();
+    File write() throws IOException;
     ObjectType objectType();
 }
