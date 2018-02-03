@@ -6,7 +6,7 @@ import no.edh.index.header.effects.read.VersionRead;
 import no.edh.index.header.effects.write.FileCounterWrite;
 import no.edh.index.header.effects.write.HeaderWrite;
 import no.edh.index.header.effects.write.VersionWrite;
-import no.edh.io.SideEffectWriter;
+import no.edh.io.SideEffects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ public class IndexHeader {
      * @throws IOException
      */
     public void init() throws IOException {
-        this.length = new SideEffectWriter(this.index).apply(0, Stream.of(
+        this.length = new SideEffects(this.index).apply(0, Stream.of(
                 new HeaderWrite(this.header),
                 new VersionWrite(this.version),
                 new FileCounterWrite((current) -> this.count)
@@ -43,7 +43,7 @@ public class IndexHeader {
     }
 
     public void write(long count) {
-        this.length = new SideEffectWriter(this.index).apply(0, Stream.of(
+        this.length = new SideEffects(this.index).apply(0, Stream.of(
                 new HeaderWrite(this.header),
                 new VersionWrite(this.version),
                 new FileCounterWrite(current -> count) // initialize with 0
@@ -53,7 +53,7 @@ public class IndexHeader {
     public static IndexHeader read(Path index) {
         IndexHeader indexEntry = new IndexHeader(index);
 
-        indexEntry.length = new SideEffectWriter(index).apply(0, Stream.of(
+        indexEntry.length = new SideEffects(index).apply(0, Stream.of(
                 new HeaderRead(indexEntry::setHeader),
                 new VersionRead(indexEntry::setVersion),
                 new FileCounterRead(indexEntry::setCount)

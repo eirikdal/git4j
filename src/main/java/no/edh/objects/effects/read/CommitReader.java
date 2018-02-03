@@ -4,27 +4,22 @@ import no.edh.hashing.SHA1;
 import no.edh.index.entry.effects.exceptions.SideEffectException;
 import no.edh.io.SideEffect;
 import no.edh.objects.Commit;
-import no.edh.objects.Objects;
-import no.edh.objects.Tree;
 import no.edh.objects.commit.Author;
 import no.edh.objects.commit.Committer;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.function.Consumer;
 
-public class CommitTreeReader implements SideEffect<RandomAccessFile> {
+public class CommitReader implements SideEffect<RandomAccessFile> {
 
-    private static final Logger logger = LoggerFactory.getLogger(CommitTreeReader.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommitReader.class);
 
     private Consumer<Commit> consumer;
 
-    public CommitTreeReader(Consumer<Commit> consumer) {
+    public CommitReader(Consumer<Commit> consumer) {
         this.consumer = consumer;
     }
 

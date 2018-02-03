@@ -5,14 +5,13 @@ import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SideEffectWriterTest {
+class SideEffectsTest {
 
     @Rule
     private TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -20,16 +19,13 @@ class SideEffectWriterTest {
     @Test
     public void should_apply_side_effects() throws IOException {
         temporaryFolder.create();
-        SideEffectWriter sideEffectWriter = new SideEffectWriter(temporaryFolder.newFile().toPath());
-        long written = sideEffectWriter.apply(0, Stream.of(new SideEffect<RandomAccessFile>() {
-            @Override
-            public long apply(RandomAccessFile file) {
-                try {
-                    file.write("test".getBytes());
-                    return file.length();
-                } catch (IOException e) {
-                    throw new SideEffectException("foobar", e);
-                }
+        SideEffects sideEffects = new SideEffects(temporaryFolder.newFile().toPath());
+        long written = sideEffects.apply(0, Stream.of(file -> {
+            try {
+                file.write("test".getBytes());
+                return file.length();
+            } catch (IOException e) {
+                throw new SideEffectException("foobar", e);
             }
         }));
         assertEquals(written, 4);

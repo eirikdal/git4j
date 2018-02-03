@@ -1,4 +1,4 @@
-package no.edh.archive.zlib;
+package no.edh.zlib;
 
 import org.apache.commons.io.IOUtils;
 

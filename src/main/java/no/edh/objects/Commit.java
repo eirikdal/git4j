@@ -1,11 +1,11 @@
 package no.edh.objects;
 
-import no.edh.archive.zlib.ZlibInflater;
+import no.edh.zlib.ZlibInflater;
 import no.edh.hashing.SHA1;
-import no.edh.io.SideEffectWriter;
+import no.edh.io.SideEffects;
 import no.edh.objects.commit.Author;
 import no.edh.objects.commit.Committer;
-import no.edh.objects.effects.read.CommitTreeReader;
+import no.edh.objects.effects.read.CommitReader;
 import no.edh.objects.effects.write.CommitWrite;
 
 import java.io.*;
@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-public class Commit implements GitObject {
+public class Commit extends GitObject {
 
     private long time;
     private Author author;
@@ -33,27 +33,15 @@ public class Commit implements GitObject {
     }
 
     @Override
-    public Path objectPath() {
-        String hash = sha1().getHashHex();
-
-        return Paths.get(hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
-    }
-
-    @Override
     public Path realPath() {
-        return null;
-    }
-
-    @Override
-    public SHA1 sha1() {
-        return new SHA1(this);
+        return objectPath();
     }
 
     @Override
     public File write() throws IOException {
         File tmpFile = File.createTempFile("commit", "file");
 
-        SideEffectWriter objectIO = new SideEffectWriter(tmpFile.toPath());
+        SideEffects objectIO = new SideEffects(tmpFile.toPath());
         objectIO.apply(0, Stream.of(new CommitWrite(this)));
 
         return tmpFile;
@@ -65,8 +53,8 @@ public class Commit implements GitObject {
         Commit commit = new Commit();
         ZlibInflater inflater = new ZlibInflater();
         inflater.decompressFile(path, new FileOutputStream(tmpFile));
-        new SideEffectWriter(tmpFile.toPath()).apply(0, Stream.of(
-                new CommitTreeReader(commit::copy)
+        new SideEffects(tmpFile.toPath()).apply(0, Stream.of(
+                new CommitReader(commit::copy)
         ));
 
         return commit;

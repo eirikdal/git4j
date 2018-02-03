@@ -35,7 +35,15 @@ public class SHA1 {
     }
 
     public static byte[] hashBytes(GitObject source) {
-        try (FileInputStream inputStream = new FileInputStream(source.write())) {
+        try {
+            return hashBytes(source.write().toPath());
+        } catch (IOException e) {
+            throw new HashEncodingException(e);
+        }
+    }
+
+    public static byte[] hashBytes(Path source) {
+        try (FileInputStream inputStream = new FileInputStream(source.toFile())) {
             return DigestUtils.sha1(inputStream);
         } catch (IOException e) {
             throw new HashEncodingException(e);

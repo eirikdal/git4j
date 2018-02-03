@@ -107,7 +107,10 @@ public class GitImpl implements Git {
 
     @Override
     public void remove(Path file) throws IOException {
+        Blob blob = new Blob(file);
 
+        SHA1 sha1 = plumbing.hashObject(blob, true);
+        plumbing.updateIndex(UpdateIndex.ADD, new CacheInfo(FileMode.Blob, sha1, blob.realPath()));
     }
 
     @Override

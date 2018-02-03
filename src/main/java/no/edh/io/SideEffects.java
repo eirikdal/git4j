@@ -8,12 +8,12 @@ import java.io.RandomAccessFile;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class SideEffectWriter {
+public class SideEffects {
 
-    private static final Logger logger = LoggerFactory.getLogger(SideEffectWriter.class);
+    private static final Logger logger = LoggerFactory.getLogger(SideEffects.class);
     private Path path;
 
-    public SideEffectWriter(Path path) {
+    public SideEffects(Path path) {
         this.path = path;
     }
 
@@ -21,18 +21,17 @@ public class SideEffectWriter {
      * Open file and apply writeoperations to it
      *
      * @param offset initial offset of entry in index file
-     * @param ops write operation to apply to index file
+     * @param sideEffects write operation to apply to index file
      *
      * @return length of bytes written
      */
-    public long apply(long offset, Stream<SideEffect<RandomAccessFile>> ops) {
+    public long apply(long offset, Stream<SideEffect<RandomAccessFile>> sideEffects) {
         long length = -1L;
         try (RandomAccessFile fos = new RandomAccessFile(path.toFile(), "rwd")) {
             fos.seek(offset);
-            length = ops.mapToLong(sideEffect -> sideEffect.apply(fos)).sum();
-            fos.close();
+            length = sideEffects.mapToLong(sideEffect -> sideEffect.apply(fos)).sum();
         } catch (IOException e) {
-            logger.warn("Could not perform sid", e);
+            logger.warn("Could not perform side effects", e);
         }
         return length;
     }

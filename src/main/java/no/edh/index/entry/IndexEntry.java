@@ -6,7 +6,7 @@ import no.edh.index.entry.effects.read.*;
 import no.edh.index.entry.effects.write.*;
 import no.edh.index.file.FileAttr;
 import no.edh.index.ops.CacheInfo;
-import no.edh.io.SideEffectWriter;
+import no.edh.io.SideEffects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +68,7 @@ public class IndexEntry {
     }
 
     public void write(CacheInfo cacheInfo) {
-        this.indexEntryLength = new SideEffectWriter(this.index).apply(offset, Stream.of(
+        this.indexEntryLength = new SideEffects(this.index).apply(offset, Stream.of(
                 new FileTimeWrite(this.creationTime, TimeUnit.SECONDS),// 4
                 new FileTimeWrite(this.creationTime, TimeUnit.NANOSECONDS), //8
                 new FileTimeWrite(this.modifiedTime, TimeUnit.SECONDS),//12
@@ -89,7 +89,7 @@ public class IndexEntry {
     public static IndexEntry read(Path index, Long offset) {
         IndexEntry indexEntry = new IndexEntry();
 
-        indexEntry.indexEntryLength = new SideEffectWriter(index).apply(offset, Stream.of(
+        indexEntry.indexEntryLength = new SideEffects(index).apply(offset, Stream.of(
                 new FileTimeRead(indexEntry::setCreationTime, TimeUnit.SECONDS),
                 new FileTimeRead(indexEntry::setModifiedTime, TimeUnit.SECONDS),
                 new FileAttrRead(indexEntry::setDevice),

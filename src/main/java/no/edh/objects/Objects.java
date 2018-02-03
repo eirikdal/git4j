@@ -1,7 +1,6 @@
 package no.edh.objects;
 
-import no.edh.archive.zlib.ZlibDeflater;
-import no.edh.hashing.SHA1;
+import no.edh.zlib.ZlibDeflater;
 import no.edh.index.entry.IndexEntry;
 import no.edh.index.ops.CacheInfo;
 import no.edh.index.ops.FileMode;
@@ -29,10 +28,14 @@ public class Objects {
         return objects;
     }
 
-    public static Path find(String hash) throws IOException {
+    public static Path find(String hash) {
+        return Paths.get(hash.substring(0, 2)).resolve(hash.substring(2, hash.length()));
+    }
+
+    public static Path absolutize(String hash) throws IOException {
         Path repo = Paths.get(System.getProperty("repo.dir"), ".git", "objects");
 
-        return repo.resolve(hash.substring(0,2)).resolve(hash.substring(2, hash.length()));
+        return repo.resolve(find(hash));
     }
 
     public static List<CacheInfo> map(List<IndexEntry> entries) {

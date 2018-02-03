@@ -1,12 +1,12 @@
 package no.edh.index;
 
+import no.edh.hashing.SHA1;
 import no.edh.index.entry.IndexEntry;
 import no.edh.index.entry.effects.write.FileAttrWrite;
 import no.edh.index.file.FileAttr;
 import no.edh.index.header.IndexHeader;
 import no.edh.index.ops.CacheInfo;
-import no.edh.io.SideEffectWriter;
-import no.edh.objects.GitObject;
+import no.edh.io.SideEffects;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +78,8 @@ public class Index {
      */
     public void updateIndex() throws IOException {
         this.header.write(this.entries.size());
-        FileAttr attr = new FileAttr(DigestUtils.sha1(Files.readAllBytes(this.index))); // sha1 of index
-        this.totalLength += new SideEffectWriter(this.index).apply(this.totalLength, Stream.of(new FileAttrWrite(attr)));
+        FileAttr attr = new FileAttr(SHA1.hashBytes(this.index)); // sha1 of index
+        this.totalLength += new SideEffects(this.index).apply(this.totalLength, Stream.of(new FileAttrWrite(attr)));
     }
 
     public List<IndexEntry> readEntries() {
